@@ -1,5 +1,7 @@
 # Rii
 
+[![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
+
 [**Project**](http://yusukematsui.me/project/rii/rii.html)
 | [**Paper**](XXXX)
 | [**Docs**](https://rii.readthedocs.io/en/latest/index.html)
