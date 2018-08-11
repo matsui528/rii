@@ -1,6 +1,7 @@
 # Rii
 
 [![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/matsui528/rii.svg?branch=master)](https://travis-ci.org/matsui528/rii)
 
 [**Project**](http://yusukematsui.me/project/rii/rii.html)
 | [**Paper**](XXXXX)
