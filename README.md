@@ -1,13 +1,13 @@
 # Rii
 
-[![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/matsui528/rii.svg?branch=master)](https://travis-ci.org/matsui528/rii)
+[![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
 
-[**Project**](http://yusukematsui.me/project/rii/rii.html)
-| [**Paper**](XXXXX)
-| [**Docs**](https://rii.readthedocs.io/en/latest/index.html)
+Reconfigurable Inverted Index (Rii): fast and memory efficient approximate nearest neighbor search method
+with a subset-search functionality.
 
-[Reconfigurable Inverted Index (Rii) [Y. Matsui, R. Hinami, and S. Satoh, ACMMM 18]](): fast and memory efficient approximate nearest neighbor search method with a subset-search functionality.
+Reference:
+- Y. Matsui, R. Hinami, and S. Satoh, "**Reconfigurable Inverted Index**", ACM Multimedia 2018 (oral). [[paper]()] [[supplementary]()] [[project]()]
 
 ## Summary of features
 - Fast and memory efficient ANN. Can handle billion-scale data on memory at once. The search is less than 10 ms.
