@@ -4,10 +4,10 @@ test:
 	python setup.py test
 
 clean:
-	rm -rf build tmp dist *.egg-info *.so
+	rm -rf build tmp dist *.egg-info *.so .eggs
 
 build:
-	python setup.py sdist bdist_wheel
+	python setup.py sdist
 
 deploy: clean build
 	twine upload dist/*

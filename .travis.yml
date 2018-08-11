@@ -18,6 +18,6 @@ install:
 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - pip install pybind11 nanopq
+  - pip install .
 script:
   - make test
