@@ -11,10 +11,10 @@ matrix:
   - os: osx
     env: PYTHON=3.6
 before_install:
-- echo $TRAVIS_OS_NAME
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX=g++-4.8 CC=gcc-4.8; fi
 - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install python3; fi
-- pip install --user --upgrade pip virtualenv
+- pip install --user --upgrade pip
+- pip install --user --upgrade virtualenv
 - virtualenv -p python$PYTHON venv
 - source venv/bin/activate
 install:
