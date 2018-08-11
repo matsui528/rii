@@ -1,0 +1,3 @@
+[submodule "ext/pqkmeans"]
+	path = ext/pqkmeans
+	url = https://github.com/DwangoMediaVillage/pqkmeans
