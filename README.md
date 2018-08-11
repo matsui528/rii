@@ -3,7 +3,7 @@
 [![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
 
 [**Project**](http://yusukematsui.me/project/rii/rii.html)
-| [**Paper**](XXXX)
+| [**Paper**](XXXXX)
 | [**Docs**](https://rii.readthedocs.io/en/latest/index.html)
 
 [Reconfigurable Inverted Index (Rii) [Y. Matsui, R. Hinami, and S. Satoh, ACMMM 18]](): fast and memory efficient approximate nearest neighbor search method with a subset-search functionality.
