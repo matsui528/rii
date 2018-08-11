@@ -97,7 +97,7 @@ class BuildExt(build_ext):
 
 setup(
     name='rii',
-    version='0.1.0dev1',
+    version='0.1.0.dev1',
     author='Yusuke Matsui',
     author_email='matsui528@gmail.com',
     url='https://github.com/matsui528/rii',
