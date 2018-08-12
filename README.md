@@ -3,6 +3,13 @@
 [![Build Status](https://travis-ci.org/matsui528/rii.svg?branch=master)](https://travis-ci.org/matsui528/rii)
 [![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
 
+
+![](http://yusukematsui.me/project/rii/img/teaser1.png)  |  ![](http://yusukematsui.me/project/rii/img/teaser2.png)
+:---:|:---:
+The search is operated for a subset of a database, which is specified by the target identifiers. The search result (ranked list) should contain the specified items only. | Given a fast (optimized) ANN system, new vectors are added. Is the updated ANN system still fast?
+
+
+
 Reconfigurable Inverted Index (Rii): fast and memory efficient approximate nearest neighbor search method
 with a subset-search functionality.
 
