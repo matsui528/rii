@@ -103,15 +103,16 @@ class BuildExt(build_ext):
 setup(
     name='rii',
     version='0.1.0',
-    author='Yusuke Matsui',
-    author_email='matsui528@gmail.com',
-    url='https://github.com/matsui528/rii',
     description='Fast and memory-efficient ANN with a subset-search functionality',
     long_description=readme,
     long_description_content_type='text/markdown',
-    ext_modules=ext_modules,
-    install_requires=requirements,
+    author='Yusuke Matsui',
+    author_email='matsui528@gmail.com',
+    url='https://github.com/matsui528/rii',
+    license='MIT',
     packages=find_packages(),
+    install_requires=requirements,
+    ext_modules=ext_modules,
     cmdclass={'build_ext': BuildExt},
     zip_safe=False
 )
