@@ -6,7 +6,7 @@
 
 ![](http://yusukematsui.me/project/rii/img/teaser1.png)  |  ![](http://yusukematsui.me/project/rii/img/teaser2.png)
 :---:|:---:
-The search is operated for a subset of a database, which is specified by the target identifiers. The search result (ranked list) should contain the specified items only. | Given a fast (optimized) ANN system, new vectors are added. Is the updated ANN system still fast?
+The search can be operated for a subset of a database. | Rii remains fast even after many new items are added.
 
 
 
