@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 import sys
 import setuptools
@@ -102,7 +102,7 @@ class BuildExt(build_ext):
 
 setup(
     name='rii',
-    version='0.1.0.dev2',
+    version='0.1.0.dev4',
     author='Yusuke Matsui',
     author_email='matsui528@gmail.com',
     url='https://github.com/matsui528/rii',
@@ -111,6 +111,7 @@ setup(
     long_description_content_type='text/markdown',
     ext_modules=ext_modules,
     install_requires=requirements,
+    packages=find_packages(),
     cmdclass={'build_ext': BuildExt},
     zip_safe=False
 )
