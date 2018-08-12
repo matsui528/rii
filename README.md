@@ -7,7 +7,7 @@ Reconfigurable Inverted Index (Rii): fast and memory efficient approximate neare
 with a subset-search functionality.
 
 Reference:
-- Y. Matsui, R. Hinami, and S. Satoh, "**Reconfigurable Inverted Index**", ACM Multimedia 2018 (oral). [[paper]()] [[supplementary]()] [[project]()]
+- Y. Matsui, R. Hinami, and S. Satoh, "**Reconfigurable Inverted Index**", ACM Multimedia 2018 (oral). [[paper]()] [[supplementary]()] [[project](http://yusukematsui.me/project/rii/rii.html)]
 
 ## Summary of features
 - Fast and memory efficient ANN. Can handle billion-scale data on memory at once. The search is less than 10 ms.
