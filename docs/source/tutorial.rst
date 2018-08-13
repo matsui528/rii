@@ -122,8 +122,9 @@ Finally, we can run a search for a given query vector ``q``.
 .. code-block:: python
 
     # Search
-    ids, dists = e.query(q=q, topk=5, L=None, target_ids=None, sort_target_ids=True, method='auto')
-    print(ids, dists)  # e.g., [1965  951 1079] [11.77537251 13.04397392 13.06065941]
+    ids, dists = e.query(q=q, topk=3, L=None, target_ids=None, sort_target_ids=True, method='auto')
+    print(ids, dists)  # e.g., [7484 8173 1556] [15.06257439 15.38533878 16.16935158]
+
 
 See the docstring :func:`rii.Rii.query` for the details of each parameter.
 You can first run the search with default parameters.

@@ -54,8 +54,8 @@ e.fit(vecs=X[:1000])
 e.add_reconfigure(vecs=X)
 
 # Search
-ids, dists = e.query(q=q, topk=5)
-print(ids, dists)  # e.g., [1965  951 1079] [11.77537251 13.04397392 13.06065941]
+ids, dists = e.query(q=q, topk=3)
+print(ids, dists)  # e.g., [7484 8173 1556] [15.06257439 15.38533878 16.16935158]
 ```
 
 ### Subset search
