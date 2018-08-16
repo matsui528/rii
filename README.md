@@ -94,4 +94,4 @@ e.query(q=q)  # Ok. (0.21 msec / query)
 - [Yusuke Matsui](http://yusukematsui.me)
 
 ## Credits
-- The logo is designed by [@richardmx](https://github.com/richardbmx)
+- The logo is designed by [@richardbmx](https://github.com/richardbmx)
