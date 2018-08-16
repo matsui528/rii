@@ -1,7 +1,9 @@
-# Rii
+<img src="http://yusukematsui.me/project/rii/img/logotype97.png" width="300">
+
 
 [![Build Status](https://travis-ci.org/matsui528/rii.svg?branch=master)](https://travis-ci.org/matsui528/rii)
 [![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
+
 
 
 ![](http://yusukematsui.me/project/rii/img/teaser1.png)  |  ![](http://yusukematsui.me/project/rii/img/teaser2.png)
@@ -91,3 +93,5 @@ e.query(q=q)  # Ok. (0.21 msec / query)
 ## Author
 - [Yusuke Matsui](http://yusukematsui.me)
 
+## Credits
+- The logo is designed by [@richardbmx](https://github.com/richardbmx)
