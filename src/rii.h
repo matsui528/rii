@@ -18,7 +18,6 @@ namespace rii {
 class RiiCpp {
 public:
     RiiCpp() {}  // Shouldn't be default-constructed
-    //RiiCpp(int M, int Ks, bool verbose) : M_(M), Ks_(Ks), verbose_(verbose) {}
     RiiCpp(const py::array_t<float> &codewords, bool verbose);
 
     // ===== Functions that can be called from Python =====
@@ -61,23 +60,6 @@ public:
     std::vector<std::vector<int>> posting_lists_;  // (NumList, any)
 };
 
-
-//void RiiCpp::SetCodewords(const py::array_t<float> &codewords)
-//{
-//    assert(codewords_.empty());  // codewords should be set only once
-//    const auto &r = codewords.unchecked<3>();  // codewords must have ndim=3, with non-writable
-//    assert(M_ == (size_t) r.shape(0));
-//    assert(Ks_ == (size_t) r.shape(1));
-//    size_t Ds = (size_t) r.shape(2);
-//    codewords_.resize(M_, std::vector<std::vector<float>>(Ks_, std::vector<float>(Ds)));
-//    for (ssize_t m = 0; m < r.shape(0); ++m) {
-//        for (ssize_t ks = 0; ks < r.shape(1); ++ks) {
-//            for (ssize_t ds = 0; ds < r.shape(2); ++ds) {
-//                codewords_[m][ks][ds] = r(m, ks, ds);
-//            }
-//        }
-//    }
-//}
 
 RiiCpp::RiiCpp(const py::array_t<float> &codewords, bool verbose)
 {
