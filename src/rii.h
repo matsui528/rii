@@ -17,10 +17,12 @@ namespace rii {
 
 class RiiCpp {
 public:
-    RiiCpp(int M, int Ks, bool verbose) : M_(M), Ks_(Ks), verbose_(verbose) {}
+    RiiCpp() {}  // Shouldn't be default-constructed
+    //RiiCpp(int M, int Ks, bool verbose) : M_(M), Ks_(Ks), verbose_(verbose) {}
+    RiiCpp(const py::array_t<float> &codewords, bool verbose);
 
     // ===== Functions that can be called from Python =====
-    void SetCodewords(const py::array_t<float> &codewords);  // This should be called first
+    //void SetCodewords(const py::array_t<float> &codewords);  // This should be called first
     void Reconfigure(int nlist, int iter);
     void AddCodes(const py::array_t<unsigned char> &codes, bool update_flag);
 
@@ -57,24 +59,32 @@ public:
     std::vector<std::vector<unsigned char>> coarse_centers_;  // (NumList, M)
     std::vector<unsigned char> flattened_codes_;  // (N, M) PQ codes are flattened to N * M long array
     std::vector<std::vector<int>> posting_lists_;  // (NumList, any)
-
-private:
-    RiiCpp();  // Shouldn't be default-constructed
 };
 
 
+//void RiiCpp::SetCodewords(const py::array_t<float> &codewords)
+//{
+//    assert(codewords_.empty());  // codewords should be set only once
+//    const auto &r = codewords.unchecked<3>();  // codewords must have ndim=3, with non-writable
+//    assert(M_ == (size_t) r.shape(0));
+//    assert(Ks_ == (size_t) r.shape(1));
+//    size_t Ds = (size_t) r.shape(2);
+//    codewords_.resize(M_, std::vector<std::vector<float>>(Ks_, std::vector<float>(Ds)));
+//    for (ssize_t m = 0; m < r.shape(0); ++m) {
+//        for (ssize_t ks = 0; ks < r.shape(1); ++ks) {
+//            for (ssize_t ds = 0; ds < r.shape(2); ++ds) {
+//                codewords_[m][ks][ds] = r(m, ks, ds);
+//            }
+//        }
+//    }
+//}
 
-
-
-
-
-
-void RiiCpp::SetCodewords(const py::array_t<float> &codewords)
+RiiCpp::RiiCpp(const py::array_t<float> &codewords, bool verbose)
 {
-    assert(codewords_.empty());  // codewords should be set only once
+    verbose_ = verbose;
     const auto &r = codewords.unchecked<3>();  // codewords must have ndim=3, with non-writable
-    assert(M_ == (size_t) r.shape(0));
-    assert(Ks_ == (size_t) r.shape(1));
+    M_ = (size_t) r.shape(0);
+    Ks_ = (size_t) r.shape(1);
     size_t Ds = (size_t) r.shape(2);
     codewords_.resize(M_, std::vector<std::vector<float>>(Ks_, std::vector<float>(Ds)));
     for (ssize_t m = 0; m < r.shape(0); ++m) {
@@ -88,7 +98,6 @@ void RiiCpp::SetCodewords(const py::array_t<float> &codewords)
 
 void RiiCpp::Reconfigure(int nlist, int iter)
 {
-    assert(!codewords_.empty());
     assert(0 < nlist);
     assert((size_t) nlist <= GetN());
 
@@ -142,14 +151,12 @@ void RiiCpp::AddCodes(const py::array_t<unsigned char> &codes, bool update_flag)
     // (1) Add new input codes to flatted_codes. This imply pushes back the elements.
     // After that, if update_flg=true, (2) update posting lists for the input codes.
     // Note that update_flag should be true in usual cases. It should be false
-    // if (1) this is the first call of AddCodes (i.e., calling in add_reconfigure()),
+    // if (1) this is the first call of AddCodes (i.e., calling in add_configure()),
     // of (2) you've decided to call reconfigure() manually after add()
-
-    assert(!codewords_.empty());
 
     if (update_flag && coarse_centers_.empty()) {
         std::cerr << "Error. reconfigure() must be called before running add(vecs=X, update_posting_lists=True)."
-                  << "If this is the first addition, please call add_reconfigure(vecs=X)" << std::endl;
+                  << "If this is the first addition, please call add_configure(vecs=X)" << std::endl;
         throw;
     }
 
@@ -404,7 +411,6 @@ unsigned char RiiCpp::NthCodeMthElement(const std::vector<unsigned char> &long_c
 {
     return long_code[ n * M_ + m];
 }
-
 
 
 } // namespace rii

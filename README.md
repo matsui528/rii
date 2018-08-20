@@ -34,30 +34,41 @@ pip install rii
 - [Tutorial](https://rii.readthedocs.io/en/latest/source/tutorial.html)
 - [API](https://rii.readthedocs.io/en/latest/source/api.html)
 
-## Example
+## Usage
 
 ### Basic ANN
 
 ```python
 import rii
+import nanopq
 import numpy as np
 
-N, D = 10000, 128
-X = np.random.random((N, D)).astype(np.float32)  # 10,000 128-dim vectors
+N, Nt, D = 10000, 1000, 128
+X = np.random.random((N, D)).astype(np.float32)  # 10,000 128-dim vectors to be searched
+Xt = np.random.random((Nt, D)).astype(np.float32)  # 1,000 128-dim vectors for training
 q = np.random.random((D,)).astype(np.float32)  # a 128-dim vector
 
-# Instantiate with M=32 sub-spaces
-e = rii.Rii(M=32)
+# Prepare a PQ/OPQ codec with M=32 sub spaces
+codec = nanopq.PQ(M=32).fit(vecs=Xt)  # Trained using Xt
 
-# Train with the top 1000 vectors
-e.fit(vecs=X[:1000])
+# Instantiate a Rii class with the codec
+e = rii.Rii(fine_quantizer=codec)
 
 # Add vectors
-e.add_reconfigure(vecs=X)
+e.add_configure(vecs=X)
 
 # Search
 ids, dists = e.query(q=q, topk=3)
 print(ids, dists)  # e.g., [7484 8173 1556] [15.06257439 15.38533878 16.16935158]
+```
+Note that, if you want, you can construct a codec at the same time as the instantiation of the Rii class
+```python
+e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt))
+e.add_configure(vecs=X)
+```
+Furthermore, you can even construct the class and add the vectors in one line
+```python
+e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 ```
 
 ### Subset search
@@ -69,7 +80,7 @@ ids, dists = e.query(q=q, topk=3, target_ids=target_ids)
 print(ids, dists)  # e.g., [728  85 132] [14.80522156 15.92787838 16.28690338]
 ```
 
-### Reconfigure
+### Data addition and reconfiguration
 
 ```python
 # Add new vectors
@@ -88,10 +99,19 @@ e.reconfigure()
 e.query(q=q)  # Ok. (0.21 msec / query)
 ```
 
+### I/O by pickling
+```python
+import pickle
+with open('rii.pkl', 'wb') as f:
+    pickle.dump(e, f)
+with open('rii.pkl', 'rb') as f:
+    e_dumped = pickle.load(f)  # e_dumped is identical to e
+```
+
 
 
 ## Author
 - [Yusuke Matsui](http://yusukematsui.me)
 
 ## Credits
-- The logo is designed by [@richardbmx](https://github.com/richardbmx)
+- The logo is designed by [@richardbmx](https://github.com/richardbmx) ([#4](https://github.com/matsui528/rii/issues/4))
