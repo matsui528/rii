@@ -7,8 +7,8 @@ namespace py = pybind11;
 namespace rii {
 PYBIND11_MODULE(main, m) {
     py::class_<RiiCpp>(m, "RiiCpp")
-        .def(py::init<int, int, bool>())
-        .def("set_codewords", &RiiCpp::SetCodewords)
+        .def(py::init<>())  // required in pickle
+        .def(py::init<py::array_t<float>, bool>())
         .def("reconfigure", &RiiCpp::Reconfigure)
         .def("add_codes", &RiiCpp::AddCodes)
         .def("query_linear", &RiiCpp::QueryLinear,
@@ -31,18 +31,21 @@ PYBIND11_MODULE(main, m) {
         .def_property_readonly("nlist", &RiiCpp::GetNumList)
         .def(py::pickle(
             [](const RiiCpp &p){
-                return py::make_tuple(p.M_, p.Ks_, p.verbose_, p.codewords_,
+                return py::make_tuple(p.codewords_, p.verbose_,
                 p.coarse_centers_, p.flattened_codes_, p.posting_lists_);
             },
             [](py::tuple t){
-                if (t.size() != 7) {
+                if (t.size() != 5) {
                     throw std::runtime_error("Invalid state when reading pickled item");
                 }
-                RiiCpp p(t[0].cast<size_t>(), t[1].cast<size_t>(), t[2].cast<bool>());
-                p.codewords_ = t[3].cast<std::vector<std::vector<std::vector<float>>>>();
-                p.coarse_centers_ = t[4].cast<std::vector<std::vector<unsigned char>>>();
-                p.flattened_codes_ = t[5].cast<std::vector<unsigned char>>();
-                p.posting_lists_ = t[6].cast<std::vector<std::vector<int>>>();
+                RiiCpp p;
+                p.codewords_ = t[0].cast<std::vector<std::vector<std::vector<float>>>>();
+                p.M_ = p.codewords_.size();
+                p.Ks_ = p.codewords_[0].size();
+                p.verbose_ = t[1].cast<bool>();
+                p.coarse_centers_ = t[2].cast<std::vector<std::vector<unsigned char>>>();
+                p.flattened_codes_ = t[3].cast<std::vector<unsigned char>>();
+                p.posting_lists_ = t[4].cast<std::vector<std::vector<int>>>();
                 return p;
             }
         ));

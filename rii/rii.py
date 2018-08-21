@@ -1,6 +1,7 @@
 import main
 import nanopq
 import numpy as np
+import copy
 
 class Rii(object):
     """Reconfigurable Inverted Index (Rii) [Matsui18]_.
@@ -14,16 +15,13 @@ class Rii(object):
     .. [Matsui18] Y. Matsui, R. Hinami, and S. Satoh, "Reconfigurable Inverted Index", ACM Multimedia 2018
 
     Args:
-        M (int): The number of sub-spaces for PQ/OPQ
-        Ks (int): The number of codewords for each sub-space, typically 256.
-        codec (str): The way to code/decode. 'pq' or 'opq'
-        verbose (bool): Verbose flag
+        fine_quantizer (object): The instance for encoding/decoding vectors.
+            `nanopq.PQ <https://nanopq.readthedocs.io/en/latest/source/api.html#product-quantization-pq>`_ or
+            `nanopq.OPQ <https://nanopq.readthedocs.io/en/latest/source/api.html#optimized-product-quantization-opq>`_.
+            This must have been already trained.
 
     Attributes:
-        M (int): The number of sub-spaces for PQ/OPQ
-        Ks (int): The number of codewords for each sub-space, typically 256.
-        codec (str): The way to code/decode. 'pq' or 'opq'
-        fine_quantizer (object): The instance for encoding/decoding.
+        fine_quantizer (object): The instance for encoding/decoding vectors.
             `nanopq.PQ <https://nanopq.readthedocs.io/en/latest/source/api.html#product-quantization-pq>`_ or
             `nanopq.OPQ <https://nanopq.readthedocs.io/en/latest/source/api.html#optimized-product-quantization-opq>`_.
         threshold (object): The threshold function for the subset-search.
@@ -31,14 +29,23 @@ class Rii(object):
             Given ``L``, compute the threshold for the selection of the search method: ``S_thre = threshold(L)``.
 
     """
-    def __init__(self, M=4, Ks=256, codec="pq", verbose=True):
-        self.M, self.Ks, self.codec = M, Ks, codec
-        self.impl_cpp = main.RiiCpp(M, Ks, verbose)
-        self.fine_quantizer = None  # PQ/OPQ instance
+    def __init__(self, fine_quantizer):
+        assert isinstance(fine_quantizer, nanopq.PQ) or isinstance(fine_quantizer, nanopq.OPQ)
+        assert fine_quantizer.codewords is not None, "Please fit the PQ/OPQ instance first"
+        assert fine_quantizer.Ks <= 256, "Ks must be less than 256 so that each code must be uint8"
+        self.fine_quantizer = copy.deepcopy(fine_quantizer)  # PQ/OPQ instance
+        self.impl_cpp = main.RiiCpp(fine_quantizer.codewords, fine_quantizer.verbose)
         self.threshold = None  # threshold function for subset search
 
-        assert Ks <= 256, "Ks must be less than 256 so that each code must be uint8"
-        assert codec in ["pq", "opq"]
+    @property
+    def M(self):
+        """int: The number of sub-spaces for PQ/OPQ"""
+        return self.fine_quantizer.M
+
+    @property
+    def Ks(self):
+        """int: The number of codewords for each sub-space, typically 256."""
+        return self.fine_quantizer.Ks
 
     @property
     def N(self):
@@ -55,18 +62,14 @@ class Rii(object):
         """np.ndarray: The codewords for PQ/OPQ, where
         shape=(M, Ks, D/M) with dtype=np.float32. Note that
         ``codewords[m][ks]`` specifies ks-th codeword (Ds-dim) for m-th subspace.
-        If :func:`fit` has not been called yet, this returns None.
         """
-        if self.fine_quantizer is None:
-            return None
-        else:
-            return self.fine_quantizer.codewords
+        return self.fine_quantizer.codewords
 
     @property
     def coarse_centers(self):
         """np.ndarray: The centers for coarse assignments, where as they are also PQ-codes.
         Note that shape=(nlist, M) with dtype=np.uint8. If coarse_centers have not been created yet
-        (i.e., :func:`reconfigure` or :func:`add_reconfigure` has not been called), this returns None.
+        (i.e., :func:`reconfigure` or :func:`add_configure` has not been called), this returns None.
         """
         if self.nlist == 0:
             return None
@@ -79,7 +82,7 @@ class Rii(object):
         """np.ndarray: The database PQ-codes, where shape=(N, M) with dtype=np.uint8.
         Accessing this property would be slow because the whole data
         is converted online from std::vector<unsigned char> in the cpp-instance to np.array.
-        If vectors have not been added yet (i.e., :func:`add` or :func:`add_reconfigure` has not been called),
+        If vectors have not been added yet (i.e., :func:`add` or :func:`add_configure` has not been called),
         this returns None.
         """
         if self.N == 0:
@@ -116,35 +119,6 @@ class Rii(object):
         else:
             return int(np.round(self.N / self.nlist))
 
-    def fit(self, vecs, iter=20, seed=123):
-        """Given training vectors, train a codec (PQ or OPQ instance)
-        This should be called first and only once.
-
-        Args:
-            vecs (np.ndarray): Traning vectors with shape=(Nt, D) and dtype=np.float32.
-            iter (int): The number of iteration for k-means of PQ/OPQ
-            seed (int): The seed for random process
-
-        Returns:
-            object: self
-
-        """
-        assert self.fine_quantizer is None, "`fit` should be called only once"
-        assert vecs.dtype == np.float32
-
-        if self.codec == "pq":
-            self.fine_quantizer = nanopq.PQ(M=self.M, Ks=self.Ks, verbose=self.verbose)
-            self.fine_quantizer.fit(vecs=vecs, iter=iter, seed=seed)
-        elif self.codec == "opq":
-            self.fine_quantizer = nanopq.OPQ(M=self.M, Ks=self.Ks, verbose=self.verbose)
-            # rotation_iter is currently fixed to 10
-            self.fine_quantizer.fit(vecs=vecs, pq_iter=iter, rotation_iter=10, seed=seed)
-
-        # Set trained codewords to cpp impl
-        self.impl_cpp.set_codewords(self.fine_quantizer.codewords)
-
-        return self
-
     def reconfigure(self, nlist=None, iter=5):
         """Given a new ``nlist``, update the :attr:`coarse_centers` and
         :attr:`posting_lists` by grouping the stored PQ-codes (:attr:`codes`)
@@ -162,8 +136,6 @@ class Rii(object):
                 :attr:`coarse_centers`.
 
         """
-        assert self.fine_quantizer is not None, "Please call `fit` first"
-
         if nlist is None:
             # As a default value, nlist is set as sqrt(N) as suggested by
             # https://github.com/facebookresearch/faiss/wiki/Index-IO,-index-factory,-cloning-and-hyper-parameter-tuning#guidelines
@@ -186,7 +158,7 @@ class Rii(object):
         In usual cases, update_posting_lists should be True.
         It will be False only if
         (1) this is the first call of data addition, i.e., coarse_centers
-        have not been created yet. This is the case when :func:`add` is called inside :func:`add_reconfigure`.
+        have not been created yet. This is the case when :func:`add` is called inside :func:`add_configure`.
         You don't need to care about this case.
         (2) you plan to call :func:`add` several times (possibly because you read data in a batch way)
         and subsequently run :func:`reconfigure`. In such case, you can skip updating posting lists
@@ -200,12 +172,11 @@ class Rii(object):
                 This should be True for usual cases.
 
         """
-        assert self.fine_quantizer is not None, "Please call `fit` first"
         assert vecs.ndim == 2
         assert vecs.dtype == np.float32
         self.impl_cpp.add_codes(self.fine_quantizer.encode(vecs), update_posting_lists)
 
-    def add_reconfigure(self, vecs, nlist=None, iter=5):
+    def add_configure(self, vecs, nlist=None, iter=5):
         """Run :func:`add` (with ``update_postig_lists=False``) and :func:`reconfigure`.
         To add vectors for the first time, please call this.
 
@@ -217,9 +188,13 @@ class Rii(object):
             iter (int): The number of iteration for pqk-means to update
                 :attr:`coarse_centers`.
 
+        Returns:
+            self
+
         """
         self.add(vecs=vecs, update_posting_lists=False)
         self.reconfigure(nlist=nlist, iter=iter)
+        return self
 
     def query(self, q, topk=1, L=None, target_ids=None, sort_target_ids=True, method="auto"):
         """Given a query vector, run the approximate nearest neighbor search over the stored PQ-codes.
@@ -260,7 +235,6 @@ class Rii(object):
                 The second one is the distances of the items to the query, with the shape=(topk, ) and dtype=float64
 
         """
-        assert self.fine_quantizer is not None, "Please call `fit` first"
         assert 0 < self.N   # Make sure there are codes to be searched
         assert 0 < self.nlist   # Make sure posting lists are available
         assert method in ["auto", "linear", "ivf"]
@@ -290,9 +264,9 @@ class Rii(object):
             "Parameters are weird. Make sure topk<=len(target_ids)<=N:  "\
             "topk={}, len(target_ids)={}, N={}".format(topk, len_target_ids, self.N)
 
-        if self.codec == "opq":
+        if isinstance(self.fine_quantizer, nanopq.OPQ):
             q_ = self.fine_quantizer.rotate(q)
-        elif self.codec == "pq":
+        elif isinstance(self.fine_quantizer, nanopq.PQ):
             q_ = q
 
         if method == "auto":
@@ -322,20 +296,12 @@ class Rii(object):
         print("verbose:", self.verbose)
         print("M:", self.M)
         print("Ks:", self.Ks)
-        print("codec:", self.codec)
+        print("fine_quantizer:", self.fine_quantizer)
         print("N:", self.N)
         print("nlist:", self.nlist)
         print("L0:", self.L0)
-
-        if self.codewords is None:
-            print("cordwords.shape:", None)
-        else:
-            print("cordwords.shape:", self.codewords.shape)
-
-        if self.coarse_centers is None:
-            print("coarse_centers.shape:", None)
-        else:
-            print("coarse_centers.shape:", self.coarse_centers.shape)
+        print("cordwords.shape:", self.codewords.shape)
+        print("coarse_centers.shape:", self.coarse_centers.shape)
 
         if self.codes is None:
             print("codes.shape:", None)

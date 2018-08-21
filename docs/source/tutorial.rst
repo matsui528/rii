@@ -40,25 +40,49 @@ Basic of Rii
 
 
 Let us first prepare 10,000 128-dim database vectors to be indexed,
+1,000 128-dim vectors for training,
 and a 128-dim query vector. They must be np.ndarray with np.float32.
 
 .. code-block:: python
 
     import rii
+    import nanopq
     import numpy as np
 
-    N, D = 10000, 128
-    X = np.random.random((N, D)).astype(np.float32)  # 10,000 128-dim vectors
+    N, Nt, D = 10000, 1000, 128
+    X = np.random.random((N, D)).astype(np.float32)  # 10,000 128-dim vectors to be searched
+    Xt = np.random.random((Nt, D)).astype(np.float32)  # 1,000 128-dim vectors for training
     q = np.random.random((D,)).astype(np.float32)  # a 128-dim vector
 
-Let's instantiate a :class:`rii.Rii` class.
+First, a PQ/OPQ codec
+(`nanopq.PQ <https://nanopq.readthedocs.io/en/latest/source/api.html#product-quantization-pq>`_ or
+`nanopq.OPQ <https://nanopq.readthedocs.io/en/latest/source/api.html#optimized-product-quantization-opq>`_)
+needs to be prepared.
+Note that PQ refers to the usual Product Quantization [Jegou11]_.
+OPQ means Optimized Product Quantization [Ge14]_, which is little bit slower for
+encoding/searching but slightly more accurate.
+
 
 .. code-block:: python
 
-    # Instantiate with M=32 sub-spaces
-    e = rii.Rii(M=32, Ks=256, codec='pq', verbose='False')
+    # Prepare a PQ/OPQ codec with M=32 sub spaces
+    codec = nanopq.PQ(M=32, Ks=256, verbose=True).fit(vecs=Xt)  # Trained using Xt
 
-Each vector will be splitted into ``M`` sub-vectors (so ``D`` must be dividable by ``M``),
+This codec will be used to encode/decode input vectors.
+Note that you can use ``X`` or the part of ``X`` as vectors for training if you
+cannot prepare training vectors, e.g., ``codec = nanopq.PQ(M=32).fit(vecs=X[:1000])``
+
+Let's instantiate a :class:`rii.Rii` class with the codec as a fine quantizer:
+
+.. code-block:: python
+
+    # Instantiate a Rii class with the codec
+    e = rii.Rii(fine_quantizer=codec)
+
+The codec will be stored in :attr:`rii.Rii.fine_quantizer`.
+You can see its codewords via :attr:`rii.Rii.codewords`.
+
+With this class, each vector will be splitted into ``M`` sub-vectors (so ``D`` must be dividable by ``M``),
 and quantized with ``Ks`` codewords.
 Note that ``M`` is a parameter to control the trade off of accuracy and memory-cost.
 If you set larger ``M``, you can achieve better quantization (i.e., less reconstruction error)
@@ -67,44 +91,17 @@ with more memory usage.
 This is tyically 256 so that each sub-space is represented by 8 bits = 1 byte = np.uint8.
 The memory cost for each pq-code is ``M`` :math:`* \log_2` ``Ks`` bits.
 
-You can select an encode/decode method from `pq` or `opq`.
-The usual Product Quantization [Jegou11]_ is specified by `pq`.
-Optimized Product Quantization [Ge14]_, which is little bit slower for
-encoding/searching but slightly more accurate, is specified by `opq`.
-The codec is stored as :attr:`rii.Rii.fine_quantizer`. This is an instance of
-`nanopq.PQ <https://nanopq.readthedocs.io/en/latest/source/api.html#product-quantization-pq>`_
-or `nanopq.OPQ <https://nanopq.readthedocs.io/en/latest/source/api.html#optimized-product-quantization-opq>`_.
-
-Next, the codewords of PQ/OPQ are trained by :func:`rii.Rii.fit` using some training vectors, with ``iter`` iterations and
-``seed`` for the seed of random process.
-
-.. code-block:: python
-
-    # Train with the top 1000 vectors
-    e.fit(vecs=X[:1000], iter=20, seed=123)
-
-
-Here, the top 1,000  database vectors are used for training.
-You can prepare other training vectors for this step if you cannot prepare
-the database vectors.
-You can see the resulting codewords via :attr:`rii.Rii.codewords`.
-Note that, alternatively, you can instantiate and train the instance in one line if you want:
-
-.. code-block:: python
-
-    e = rii.Rii(M=32, Ks=256, codec='pq', verbose='False').fit(vecs=X[:1000], iter=20, seed=123)
-
 
 Next, let us add the vectors ``X`` into the rii instance.
 
 .. code-block:: python
 
     # Add vectors
-    e.add_reconfigure(vecs=X, nlist=None, iter=5)
+    e.add_configure(vecs=X, nlist=None, iter=5)
 
-Inside :func:`rii.Rii.add_reconfigure`, all vectors are converted to PQ-codes
+Inside :func:`rii.Rii.add_configure`, all vectors are converted to PQ-codes
 and stored (:func:`rii.Rii.add`).
-The PQ-codes are then grouped into ``nlist`` clusters (:func:`rii.Rii.reconfigure`),
+The PQ-codes are then grouped into ``nlist`` clusters (:func:`rii.Rii.configure`),
 i.e., :attr:`rii.Rii.coarse_centers` are computed for the coarse assignment step.
 The default value of ``nlist`` is None, by which ``nlist`` is set to :math:`\sqrt{N}`
 as suggested `here <https://github.com/facebookresearch/faiss/wiki/Index-IO,-index-factory,-cloning-and-hyper-parameter-tuning#guidelines>`_.
@@ -113,8 +110,21 @@ via PQk-means [Matsui17]_ is specified by ``iter``.
 The resultant PQ-codes and posting lists can be accessed by :attr:`rii.Rii.codes`
 and :attr:`rii.Rii.posting_lists`, respectively.
 
-Note that you must call :func:`rii.Rii.add_reconfigure` (not :func:`rii.Rii.add`)
+Make sure that you must call :func:`rii.Rii.add_configure` (not :func:`rii.Rii.add`)
 if you first add vectors because you need to create coarse centers.
+
+Note that, if you want, you can construct a codec at the same time as the instantiation of the Rii class
+
+.. code-block:: python
+
+    e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt))
+    e.add_configure(vecs=X)
+
+Furthermore, you can even construct the class and add the vectors in one line
+
+.. code-block:: python
+
+    e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 
 
 Finally, we can run a search for a given query vector ``q``.
@@ -194,7 +204,7 @@ Some examples of subset-search are:
         e.search(q=q, topk=1, target_ids=target_ids, sort_target_ids=False)
 
 
-Reconfiguration (data addition)
+Data addition and reconfiguration
 -----------------------------------
 
 Although there exist many fast ANN algorithms,
