@@ -71,6 +71,32 @@ class TestSuite(unittest.TestCase):
         self.assertTrue(np.allclose(e1.codes, e3.codes))
         self.assertListEqual(e1.posting_lists, e3.posting_lists)
 
+    def test_add_configure_small_number_of_vectors(self):
+        import copy
+        M, Ks = 4, 20
+        N, D = 1000, 40
+        X = np.random.random((N, D)).astype(np.float32)
+        e1 = rii.Rii(fine_quantizer=nanopq.PQ(M=M, Ks=Ks, verbose=True).fit(vecs=X))
+        e2 = copy.deepcopy(e1)
+        e3 = copy.deepcopy(e1)
+        for x in X[:10]:
+            e1.add_configure(vecs=x.reshape(1, -1))  # Can be added one by one
+        self.assertEqual(e1.N, 10)
+
+        e2.add_configure(vecs=X[:10])
+        # Should be same to that by add_reconfigure at once
+        self.assertTrue(np.allclose(e1.codes, e2.codes))
+        self.assertEqual(e1.posting_lists, e2.posting_lists)
+
+        for x in X[:10]:
+            e3.add(x.reshape(1, -1))
+        e3.reconfigure()
+        # Should be same to that by add several times the nreconfigure
+        self.assertTrue(np.allclose(e1.codes, e3.codes))
+        self.assertEqual(e1.posting_lists, e3.posting_lists)
+
+
+
     def test_query_linear(self):
         M, Ks = 4, 20
         N, D = 1000, 40
