@@ -418,7 +418,7 @@ def estimate_best_threshold_function(e, queries):
         return e.N
 
     if e.verbose:
-        print("===== Threshold selection by drawing a L-thre curve====")
+        print("===== Threshold selection ====")
     xs = []
     ys = []
     for L in [k * e._multiple_of_L0_covering_topk(k) for k in [1, 2, 4, 8, 16]]:

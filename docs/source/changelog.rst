@@ -2,7 +2,7 @@ Changelog
 =============
 
 
-v0.2.1 (August XX, 2018)
+v0.2.1 (August 24, 2018)
 ----------------------------
 - `#10 <https://github.com/matsui528/rii/issues/10>`_
   Properly handling sequential data addition for the first Rii construction

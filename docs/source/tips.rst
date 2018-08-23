@@ -74,4 +74,9 @@ But you must call :func:`rii.Rii.reconfigure` in the final step to create postin
 
 
 
+Verbose flag
+---------------
+You can turn on/off the verbose flag via ``e.verbose = True`` or ``e.verbose = False``. The default value is
+decided by the verbose flag of the codec.
+
 

@@ -102,7 +102,7 @@ class BuildExt(build_ext):
 
 setup(
     name='rii',
-    version='0.2.0',
+    version='0.2.1',
     description='Fast and memory-efficient ANN with a subset-search functionality',
     long_description=readme,
     long_description_content_type='text/markdown',
