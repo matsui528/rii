@@ -42,6 +42,8 @@ Basic of Rii
 Let us first prepare 10,000 128-dim database vectors to be indexed,
 1,000 128-dim vectors for training,
 and a 128-dim query vector. They must be np.ndarray with np.float32.
+Our objective is to find similar vectors to the query from the database vectors
+efficiently.
 
 .. code-block:: python
 
@@ -58,9 +60,10 @@ First, a PQ/OPQ codec
 (`nanopq.PQ <https://nanopq.readthedocs.io/en/latest/source/api.html#product-quantization-pq>`_ or
 `nanopq.OPQ <https://nanopq.readthedocs.io/en/latest/source/api.html#optimized-product-quantization-opq>`_)
 needs to be prepared.
+This codec will be used to encode/decode vectors.
 Note that PQ refers to the usual Product Quantization [Jegou11]_.
-OPQ means Optimized Product Quantization [Ge14]_, which is little bit slower for
-encoding/searching but slightly more accurate.
+OPQ means Optimized Product Quantization [Ge14]_, which is an extended version of PQ.
+Compared to PQ, OPQ is little bit slower for encoding/searching but slightly more accurate.
 
 
 .. code-block:: python
@@ -68,11 +71,12 @@ encoding/searching but slightly more accurate.
     # Prepare a PQ/OPQ codec with M=32 sub spaces
     codec = nanopq.PQ(M=32, Ks=256, verbose=True).fit(vecs=Xt)  # Trained using Xt
 
-This codec will be used to encode/decode input vectors.
-Note that you can use ``X`` or the part of ``X`` as vectors for training if you
-cannot prepare training vectors, e.g., ``codec = nanopq.PQ(M=32).fit(vecs=X[:1000])``
+See `the tutorial of nanopq <https://nanopq.readthedocs.io/en/latest/source/tutorial.html>`_
+for more details about the parameter selection of the codec.
+Note that you can use ``X`` or the part of ``X`` for training if you
+cannot prepare training vectors ``Xt``. For example: ``codec = nanopq.PQ(M=32).fit(vecs=X[:1000])``
 
-Let's instantiate a :class:`rii.Rii` class with the codec as a fine quantizer:
+Let's instantiate a search class, :class:`rii.Rii`, with the trained codec as a fine quantizer:
 
 .. code-block:: python
 
@@ -82,49 +86,61 @@ Let's instantiate a :class:`rii.Rii` class with the codec as a fine quantizer:
 The codec will be stored in :attr:`rii.Rii.fine_quantizer`.
 You can see its codewords via :attr:`rii.Rii.codewords`.
 
-With this class, each vector will be splitted into ``M`` sub-vectors (so ``D`` must be dividable by ``M``),
-and quantized with ``Ks`` codewords.
-Note that ``M`` is a parameter to control the trade off of accuracy and memory-cost.
-If you set larger ``M``, you can achieve better quantization (i.e., less reconstruction error)
-with more memory usage.
-``Ks`` specifies the number of codewords for quantization.
-This is tyically 256 so that each sub-space is represented by 8 bits = 1 byte = np.uint8.
-The memory cost for each pq-code is ``M`` :math:`* \log_2` ``Ks`` bits.
-
-
-Next, let us add the vectors ``X`` into the rii instance.
+Next, let us add the vectors ``X`` into the rii instance
+by running :func:`rii.Rii.add_configure`:
 
 .. code-block:: python
 
     # Add vectors
     e.add_configure(vecs=X, nlist=None, iter=5)
 
-Inside :func:`rii.Rii.add_configure`, all vectors are converted to PQ-codes
-and stored (:func:`rii.Rii.add`).
-The PQ-codes are then grouped into ``nlist`` clusters (:func:`rii.Rii.configure`),
-i.e., :attr:`rii.Rii.coarse_centers` are computed for the coarse assignment step.
-The default value of ``nlist`` is None, by which ``nlist`` is set to :math:`\sqrt{N}`
-as suggested `here <https://github.com/facebookresearch/faiss/wiki/Index-IO,-index-factory,-cloning-and-hyper-parameter-tuning#guidelines>`_.
-The number of iteration for the clustering process
-via PQk-means [Matsui17]_ is specified by ``iter``.
-The resultant PQ-codes and posting lists can be accessed by :attr:`rii.Rii.codes`
-and :attr:`rii.Rii.posting_lists`, respectively.
+Inside this function, :func:`rii.Rii.add` and :func:`rii.Rii.reconfigure` are called:
+
+- :func:`rii.Rii.add`
+
+  - The input vectors ``X`` are encoded to memory-efficient PQ-codes via :attr:`rii.Rii.fine_quantizer`.
+    See `the tutorial of nanopq <https://nanopq.readthedocs.io/en/latest/source/tutorial.html>`_
+    for more details about PQ encoding.
+
+  - The resultant PQ-codes are stored in the Rii instance.
+    Note that you can access them via :attr:`rii.Rii.codes`.
+
+- :func:`rii.Rii.reconfigure`
+
+  - For the fast search, an inverted index structure is created by this function.
+
+  - The PQ-codes are groupted into several clusters via PQk-means [Matsui17]_.
+    You can access the resultant cluster centers via :attr:`rii.Rii.coarse_centers`.
+    The assignment for each PQ-code to its nearest center is stored on :attr:`rii.Rii.posting_lists`.
+
+  - The number of centers is denoted by the parameter ``nlist``.
+    The default value is None, where ``nlist`` is set to ``sqrt(N)`` automatically
+    as suggested `here <https://github.com/facebookresearch/faiss/wiki/Index-IO,-index-factory,-cloning-and-hyper-parameter-tuning#guidelines>`_.
+    The number of iteration for the clustering process
+    is specified by ``iter``.
 
 Make sure that you must call :func:`rii.Rii.add_configure` (not :func:`rii.Rii.add`)
-if you first add vectors because you need to create coarse centers.
+for the first data addition. It is because you need to create coarse centers (posting lists).
+Note that, if you would like to add vectors sequentially
+when constructing the class, please refer this; :ref:`sequential_add`
 
-Note that, if you want, you can construct a codec at the same time as the instantiation of the Rii class
 
-.. code-block:: python
+.. hint::
 
-    e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt))
-    e.add_configure(vecs=X)
+    By the way, you can construct a codec at the same time as the instantiation of the Rii class
+    if you want to write them in one line.
 
-Furthermore, you can even construct the class and add the vectors in one line
+    .. code-block:: python
 
-.. code-block:: python
+        e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt))
+        e.add_configure(vecs=X)
 
-    e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
+    Furthermore, you can even construct the class and add the vectors in the same line
+    by chaining functions.
+
+    .. code-block:: python
+
+        e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 
 
 Finally, we can run a search for a given query vector ``q``.
@@ -137,8 +153,8 @@ Finally, we can run a search for a given query vector ``q``.
 
 
 See the docstring :func:`rii.Rii.query` for the details of each parameter.
-You can first run the search with default parameters.
-For parameter tuning, please see
+I recommend running the search with the default parameters first.
+For parameter tuning, please refer
 :ref:`guideline_for_search` for more details.
 
 
@@ -151,7 +167,7 @@ Subset search
 -----------------
 
 The search can be conducted on a **subset** of the whole PQ-codes.
-Such subset-search is practically important, for example of image search,
+Such subset-search is practically important. For example of image search,
 we can filter out unrelated images by checking their tags, and run feature-based search
 to find the similar images to the query.
 
@@ -161,7 +177,7 @@ A subset is specified simply by a numpy array, ``target_ids``.
 
     # The search can be conducted over a subset of the database
     target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234])  # Specified by IDs
-    ids, dists = e.query(q=q, topk=3, target_ids=target_ids, sort_target_ids=False)
+    ids, dists = e.query(q=q, topk=3, target_ids=target_ids, sort_target_ids=True)
     print(ids, dists)  # e.g., [728  85 132] [14.80522156 15.92787838 16.28690338]
 
 As can be seen in the resulted identifiers ``ids``, the search result includes
@@ -184,54 +200,58 @@ the items specified by ``target_ids`` only. Note that:
   This is a complete procedure explained in the paper.
 
 
-Some examples of subset-search are:
+.. hint::
 
-.. code-block:: python
+    Some examples of subset-search are:
 
-    # Because target ids are not sorted, sort_target_ids must be True (default behavior)
-    e.query(q=q, topk=1, target_ids=np.array([345, 23, 994, 425]))
+    .. code-block:: python
 
-    # The search is run on the 1st to 1000th items.
-    # Since the target_ids are already sorted, you can set False for the sort flag.
-    e.query(q=q, topk=1, target_ids=np.arange(1000), sort_target_ids=False)
+        # Because target ids are not sorted, sort_target_ids must be True (default behavior)
+        e.query(q=q, topk=1, target_ids=np.array([345, 23, 994, 425]))
 
-    # Search for several queries with a large target_ids. In such case,
-    # it is redundant to sort inside the query function every time; you should sort only once
-    target_ids = np.array([44432, 32786, ..., 9623])   # Lots of identifiers
-    target_ids = np.sort(target_ids)  # Do sort
-    for q in Q:
-        # Here, ths sort flag is off for efficient search
-        e.search(q=q, topk=1, target_ids=target_ids, sort_target_ids=False)
+        # The search is run on the 1st to 1000th items.
+        # Since the target_ids are already sorted, you can set False for the sort flag.
+        e.query(q=q, topk=1, target_ids=np.arange(1000), sort_target_ids=False)
+
+        # Search for several queries with a large target_ids. In such case,
+        # it is redundant to sort inside the query function every time; you should sort only once
+        target_ids = np.array([44432, 32786, ..., 9623])   # Lots of identifiers
+        target_ids = np.sort(target_ids)  # Do sort
+        for q in Q:
+            # Here, ths sort flag is off for efficient search
+            e.search(q=q, topk=1, target_ids=target_ids, sort_target_ids=False)
 
 
 Data addition and reconfiguration
------------------------------------
+-------------------------------------
 
 Although there exist many fast ANN algorithms,
 almost all methods are optimized for an initial item set.
-It is not always clear how the search performance degrades when new items are added.
+It is not always clear how the search performance degrades when many items are newly added.
 Rii provides a **reconfigure** function, by which the search remains fast
 even after many vectors are newly added.
 
 Let us first show how to add new vectors.
+Suppose a Rii instance is constructed with 10,000 items.
+Given the constructed Rii instance,
+you can call :func:`rii.Rii.add` to add new vectors.
+The search can be conducted by :func:`rii.Rii.query`.
+This works well when ``X2`` is small enough:
 
 .. code-block:: python
 
-    # Suppose e has 10,000 PQ-codes.
+    # Suppose e was constructed with 10,000 PQ-codes.
 
     # Add new vectors
     X2 = np.random.random((1000, D)).astype(np.float32)
     e.add(vecs=X2)  # Now N is 11000
     e.query(q=q)  # Ok. (0.12 msec / query)
 
-You can call :func:`rii.Rii.add` to add new vectors.
-The search can be conducted by :func:`rii.Rii.query`.
-This works well when ``X2`` is small enough.
 
 
 However, if you add quite a lot of vectors,
-the search might become slower
-because the data structure has been optimized for the initial items (N=10000).
+the search might become slower.
+It is because the data structure has been optimized for the initial items (N=10000).
 
 .. code-block:: python
 
@@ -241,7 +261,8 @@ because the data structure has been optimized for the initial items (N=10000).
 
 
 In such case, you can run :func:`rii.Rii.reconfigure`.
-That updates the data structure, making the search faster.
+That updates the data structure (re-computes the coarse centers and posting lsits),
+making the search faster.
 
 .. code-block:: python
 
@@ -249,18 +270,17 @@ That updates the data structure, making the search faster.
     e.query(q=q)  # Ok. (0.21 msec / query)
 
 
-Note that, if you add several items in a batch manner,
-you can skip to update posting lists until the final reconfigure.
+Note that, if you want, the above addition and reconfiguration
+can be achieved at the same time with one line by
+:func:`rii.Rii.add_configure`:
 
 .. code-block:: python
 
-    # Batch addition example. Suppose there are big matrices Xa, Xb, ...
-    for filename in ["Xa.npy", "Xb.npy", "Xc.npy"]:
-        X = np.load(filename)
-        e.add(vecs=X, update_posting_lists=False)
-    e.reconfigure()
+    X3 = np.random.random((1000000, D)).astype(np.float32)
+    e.add_configure(vecs=X3, nlist=None, iter=5)
 
-This produces exact the same results with ``e.add(vecs=X)``, but faster.
+
+
 
 
 
@@ -296,38 +316,6 @@ There are two utility functions, :func:`rii.Rii.print_params` and :func:`rii.Rii
     e.clear()
 
 
-
-
-.. _guideline_for_search:
-
-Guideline for search
----------------------
-
-- **Need more accurate search**:
-
-  - Set a larger ``L`` in :func:`rii.Rii.query`.
-    This usually improves the accuracy, but makes the search slower.
-    The recommended way is to set a multiple of :attr:`rii.Rii.L0`, e.g.,
-    ``e.query(q=q, L=4 * e.L0)``
-
-  - If you find changing ``L`` is not enough, please construct the rii with
-    a larger ``M`` value.
-    Again, this change boosts the accuracy, but the runtime becomes slower.
-    Don't forget that the dimensionality of the vector ``D`` must be dividable by ``M``.
-
-  - If your codec is `pq`, please consider to switch to `opq`.
-
-- **Want to make the search faster**:
-
-  - Please run :func:`rii.Rii.reconfigure` with a larger ``nlist``, such as
-    ``e.reconfigure(nlist=4*np.sqrt(e.N))``
-
-  - If your task is subset-search, please consider sorting ``target_ids`` before
-    passing it to the query function, and call :func:`rii.Rii.query` with
-    ``sort_target_ids=False``.
-
-  - Try a smaller ``L`` such as ``e.query(q=q, L=e.L0 / 2)``.
-    This is not strongly recommended because the accuracy gets worse).
 
 
 

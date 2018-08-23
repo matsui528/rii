@@ -29,6 +29,7 @@ Contents
    :maxdepth: 1
 
    source/tutorial
+   source/tips
    source/api
    source/changelog
 

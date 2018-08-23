@@ -144,37 +144,49 @@ class Rii(object):
         self.impl_cpp.reconfigure(nlist, iter)
 
         self.threshold = estimate_best_threshold_function(
-            e=self, queries=self.fine_quantizer.decode(self.codes[:100]))
+            e=self, queries=self.fine_quantizer.decode(self.codes[:min(100, self.N)]))
 
-    def add(self, vecs, update_posting_lists=True):
+    def add(self, vecs, update_posting_lists="auto"):
         """Push back new vectors to the system.
         More specifically, this function
         (1) encodes the new vectors into PQ/OPQ-codes,
         (2) pushes back them to the existing database PQ/OPQ-codes, and
         (3) finds the nearest coarse-center for each code and
         updates the corresponding posting list.
-        Note that (3) is done only if ``update_posting_lists=True``
+        Note that (3) is done only if (a) ``update_posting_lists=True`` or
+        (b) ``update_posting_lists='auto'`` and 0 < :attr:`nlist`.
 
         In usual cases, update_posting_lists should be True.
         It will be False only if
         (1) this is the first call of data addition, i.e., coarse_centers
         have not been created yet. This is the case when :func:`add` is called inside :func:`add_configure`.
-        You don't need to care about this case.
+        Usually, you don't need to care about this case.
         (2) you plan to call :func:`add` several times (possibly because you read data in a batch way)
-        and subsequently run :func:`reconfigure`. In such case, you can skip updating posting lists
+        and then run :func:`reconfigure`. In such case, you can skip updating posting lists
         because they will be again updated in :func:`reconfigure`.
+
+        If you set 'auto' for update_posting_lists, it will be automatically set correctly, i.e.,
+        True is set if the posting lists have alreay been created (0 < `nlist`), and False is set otherwise.
 
 
         Args:
             vecs (np.ndarray): The new vectors with the shape=(Nv, D) and dtype=np.float32,
                 where Nv is the number of new vectors.
-            update_posting_lists (bool): If True, :attr:`posting_lists` will be updated.
+            update_posting_lists (bool or str): True or False or 'auto'. If True, :attr:`posting_lists` will be updated.
                 This should be True for usual cases.
 
         """
         assert vecs.ndim == 2
         assert vecs.dtype == np.float32
-        self.impl_cpp.add_codes(self.fine_quantizer.encode(vecs), update_posting_lists)
+        if update_posting_lists == 'auto':
+            if 0 < self.nlist:
+                flag = True
+            else:
+                flag = False
+        else:
+            flag = update_posting_lists
+
+        self.impl_cpp.add_codes(self.fine_quantizer.encode(vecs), flag)
 
     def add_configure(self, vecs, nlist=None, iter=5):
         """Run :func:`add` (with ``update_postig_lists=False``) and :func:`reconfigure`.
@@ -200,7 +212,7 @@ class Rii(object):
         """Given a query vector, run the approximate nearest neighbor search over the stored PQ-codes.
         This functions returns the identifiers and the distances of ``topk`` nearest PQ-codes to the query.
 
-        The search can be conduceted over a subset of the whole PQ-codes by specifing ``target_ids``.
+        The search can be conducted over a subset of the whole PQ-codes by specifying ``target_ids``.
         For example, if ``target_ids=np.array([23, 567, 998])``, the search result would be
         the items with these identifiers, sorted by the distance to the query.
 
@@ -208,6 +220,8 @@ class Rii(object):
         in the paper) or inverted-index (see Alg. 2 in the paper). This is specified by ``method``, by setting
         'linear' or 'ivf'. If 'auto' is set, the faster one is automatically selected
         (See Alg. 3 in the paper for more details).
+
+        See :ref:`guideline_for_search` for tips of the parameter selection.
 
         Args:
             q (np.ndarray): The query vector with the shape=(D, ) and dtype=np.float32.
@@ -382,9 +396,10 @@ def estimate_best_threshold_function(e, queries):
 
             # If linear scan gets slower than ivf
             if t_ivf0 < t_linear0:
-                if s == 128 and e.verbose:
-                    print("ivf is faster than linear scan even if |S|<=128. This is a bit weird. "\
-                          "Anyway let's set threshold as 128")
+                if s == 128:
+                    if e.verbose:
+                        print("ivf is faster than linear scan even if |S|<=128. This is a bit weird. "\
+                              "Anyway let's set threshold as 128")
                     return 128
 
                 # Do binary search 5 times
@@ -407,7 +422,7 @@ def estimate_best_threshold_function(e, queries):
     xs = []
     ys = []
     for L in [k * e._multiple_of_L0_covering_topk(k) for k in [1, 2, 4, 8, 16]]:
-        if e.N <= L:
+        if e.N < L:
             continue
         thre = sweep(e=e, queries=queries, L=L)
         xs.append(L)

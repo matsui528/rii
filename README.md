@@ -32,6 +32,7 @@ pip install rii
 
 ## [Documentation](https://rii.readthedocs.io/en/latest/index.html)
 - [Tutorial](https://rii.readthedocs.io/en/latest/source/tutorial.html)
+- [Tips](https://rii.readthedocs.io/en/latest/source/tips.html)
 - [API](https://rii.readthedocs.io/en/latest/source/api.html)
 
 ## Usage
