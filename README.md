@@ -109,7 +109,8 @@ with open('rii.pkl', 'rb') as f:
     e_dumped = pickle.load(f)  # e_dumped is identical to e
 ```
 
-
+## [Examples](./examples)
+- [Simple tag search](./examples/tag_search/simple_tag_search.ipynb)
 
 ## Author
 - [Yusuke Matsui](http://yusukematsui.me)

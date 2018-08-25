@@ -317,7 +317,12 @@ There are two utility functions, :func:`rii.Rii.print_params` and :func:`rii.Rii
 
 
 
+More examples
+-----------------
 
+See more advanced examples as follows
+
+- `Simple tag search <https://github.com/matsui528/rii/tree/master/examples/tag_search/simple_tag_search.ipynb>`_
 
 
 
