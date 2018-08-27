@@ -94,10 +94,12 @@ class BuildExt(build_ext):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
-        opts.append('-fopenmp')  # For pqk-means
+        if not sys.platform == 'darwin':
+            opts.append('-fopenmp')  # For pqk-means
         for ext in self.extensions:
             ext.extra_compile_args = opts
-            ext.extra_link_args = ['-fopenmp']  # Because of PQk-means
+            if not sys.platform == 'darwin':
+                ext.extra_link_args = ['-fopenmp']  # Because of PQk-means
         build_ext.build_extensions(self)
 
 setup(
