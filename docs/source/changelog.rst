@@ -1,6 +1,10 @@
 Changelog
 =============
 
+v0.2.2 (August XX, 2018)
+----------------------------
+- `#14 <https://github.com/matsui528/rii/pull/14>`_ Build on Mac with clang (without OpenMP)
+
 
 v0.2.1 (August 24, 2018)
 ----------------------------
