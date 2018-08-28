@@ -232,6 +232,45 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(e.codes, None)
         self.assertEqual(len(e.posting_lists), 0)
 
+    def test_merge(self):
+        from itertools import chain
+        M, Ks, N1, N2, D = 4, 20, 1000, 500, 40
+        X1 = np.random.random((N1, D)).astype(np.float32)
+        X2 = np.random.random((N2, D)).astype(np.float32)
+        codec = nanopq.PQ(M=M, Ks=Ks, verbose=True).fit(vecs=X1)
+        e1 = rii.Rii(fine_quantizer=codec)
+        e2 = rii.Rii(fine_quantizer=codec)
+
+        # e1: empty  e2: empty
+        e1.merge(e2)
+        self.assertEqual((e1.N, e2.N), (0, 0))
+
+        # e1: vecs  e2: empty
+        e1.add_configure(vecs=X1)
+        e1.merge(e2)  # posting lists are created in the above line
+        self.assertEqual(e1.N, N1)
+        self.assertEqual(e1.nlist, int(np.sqrt(N1)))  # Have posting lists
+        e1.clear()
+
+        # e1: empty  e2: vecs
+        e2.add_configure(vecs=X2)
+        e1.merge(e2)  # e1 didn't have posting lists
+        self.assertEqual(e1.N, N2)
+        self.assertEqual(e1.nlist, 0)  # No posting lists
+        e1.clear()
+        e2.clear()
+
+        # e1: vecs  e2: vecs
+        e1.add_configure(vecs=X1)
+        e2.add_configure(vecs=X2)
+        e1.merge(e2)
+        self.assertEqual(e1.N, N1 + N2)
+        self.assertEqual(e1.nlist, int(np.sqrt(N1)))  # posting lists are same as the original e1
+
+        # Make sure everything is fine
+        self.assertTrue(np.array_equal(e1.codes, codec.encode(np.vstack((X1, X2)))))
+        self.assertEqual(sorted(chain(*e1.posting_lists)), list(range(N1 + N2)))
+
     ### For debugging ###
     # def test_runtime(self):
     #     import time

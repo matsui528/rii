@@ -306,7 +306,8 @@ The rii class supports pickling. You can read/write an instance easily.
 Utility functions
 -----------------
 
-There are two utility functions, :func:`rii.Rii.print_params` and :func:`rii.Rii.clear`.
+There are some utility functions: :func:`rii.Rii.print_params`, :func:`rii.Rii.clear`,
+and :func:`rii.Rii.merge`.
 
 .. code-block:: python
 
@@ -315,6 +316,14 @@ There are two utility functions, :func:`rii.Rii.print_params` and :func:`rii.Rii
 
     # Delete all PQ-codes and posting lists. fine_quantizer is kept.
     e.clear()
+
+    # You can merge two Rii instances if they have the same fine_quantizer
+    e1 = rii.Rii(fine_quantizer=codec)
+    e2 = rii.Rii(fine_quantizer=codec)
+    e1.add_reconfigure(vecs=X1)
+    e2.add_reconfigure(vecs=X2)
+    e1.merge(e2)  # e1 will have (PQ-codes of) both X1 and X2
+
 
 
 

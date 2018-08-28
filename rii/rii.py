@@ -141,6 +141,8 @@ class Rii(object):
             # https://github.com/facebookresearch/faiss/wiki/Index-IO,-index-factory,-cloning-and-hyper-parameter-tuning#guidelines
             nlist = int(np.sqrt(self.N))
 
+        assert 0 < nlist
+
         self.impl_cpp.reconfigure(nlist, iter)
 
         self.threshold = estimate_best_threshold_function(
@@ -178,15 +180,9 @@ class Rii(object):
         """
         assert vecs.ndim == 2
         assert vecs.dtype == np.float32
-        if update_posting_lists == 'auto':
-            if 0 < self.nlist:
-                flag = True
-            else:
-                flag = False
-        else:
-            flag = update_posting_lists
 
-        self.impl_cpp.add_codes(self.fine_quantizer.encode(vecs), flag)
+        self.impl_cpp.add_codes(self.fine_quantizer.encode(vecs),
+                                self._resolve_update_posting_lists_flag(update_posting_lists))
 
     def add_configure(self, vecs, nlist=None, iter=5):
         """Run :func:`add` (with ``update_postig_lists=False``) and :func:`reconfigure`.
@@ -207,6 +203,33 @@ class Rii(object):
         self.add(vecs=vecs, update_posting_lists=False)
         self.reconfigure(nlist=nlist, iter=iter)
         return self
+
+    def merge(self, engine, update_posting_lists='auto'):
+        """Given another Rii instance (engine), merge its PQ-codes (engine.codes)
+        to this instance. IDs for new PQ-codes are automatically assigned.
+        For example, if self.N = 100, the IDs of the merged PQ-codes would be 100, 101, ...
+
+        The original posting lists of this instance will be kept
+        maintained; new PQ-codes will be simply added over that.
+        Thus it might be better to call :func:`reconfigure` after many new codes are merged.
+
+        Args:
+            engine (rii.Rii): Rii instance. engine.fine_quantizer should be
+                the same as self.fine_quantizer
+            update_posting_lists (bool or str): True or False or 'auto'. If True, :attr:`posting_lists` will be updated.
+                This should be True for usual cases.
+
+        """
+        assert isinstance(engine, Rii)
+        assert self.fine_quantizer == engine.fine_quantizer, \
+            "Two engines to be merged must have the same fine quantizer"
+
+        if engine.N != 0:
+            self.impl_cpp.add_codes(engine.codes,
+                                    self._resolve_update_posting_lists_flag(update_posting_lists))
+
+        if self.verbose:
+            print("The number of codes: {}".format(self.N))
 
     def query(self, q, topk=1, L=None, target_ids=None, sort_target_ids=True, method="auto"):
         """Given a query vector, run the approximate nearest neighbor search over the stored PQ-codes.
@@ -359,6 +382,18 @@ class Rii(object):
             return True
         else:
             return False
+
+    def _resolve_update_posting_lists_flag(self, flag):
+        # If flag == auto, return True or False depending on nlist.
+        # Otherwise, return directly
+        assert flag in ["auto", True, False]
+        if flag == 'auto':
+            if 0 < self.nlist:
+                return True
+            else:
+                return False
+        else:
+            return flag
 
 
 def estimate_best_threshold_function(e, queries):
