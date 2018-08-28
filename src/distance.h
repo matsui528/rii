@@ -94,7 +94,7 @@ static inline __m512 masked_read_16 (int d, const float *x)
 // ========================= Distance functions ============================
 
 #ifdef __AVX512F__
-static const std::string g_architecture = "avx512";
+static const std::string g_simd_architecture = "avx512";
 
 // AVX512 implementation by Yusuke
 float fvec_L2sqr (const float *x, const float *y, size_t d)
@@ -144,7 +144,7 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
 }
 
 #elif __AVX__
-static const std::string g_architecture = "avx";
+static const std::string g_simd_architecture = "avx";
 
 // This function is from Faiss
 // AVX implementation
