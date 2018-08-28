@@ -96,6 +96,7 @@ class BuildExt(build_ext):
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         if not sys.platform == 'darwin':
             opts.append('-fopenmp')  # For pqk-means
+        opts.append('-march=native')  # For fast SIMD computation of L2 distance
         for ext in self.extensions:
             ext.extra_compile_args = opts
             if not sys.platform == 'darwin':
