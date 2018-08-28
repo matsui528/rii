@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <cassert>
-
 #include "pqkmeans.h"
+#include "./distance.h"
 
 // For py::array_t
 // See http://pybind11.readthedocs.io/en/master/advanced/pycpp/numpy.html#direct-access
@@ -336,16 +336,7 @@ std::vector<std::vector<float> > RiiCpp::DTable(const py::array_t<float> &vec) c
     std::vector<std::vector<float>> dtable(M_, std::vector<float>(Ks_));
     for (size_t m = 0; m < M_; ++m) {
         for (size_t ks = 0; ks < Ks_; ++ks) {
-            // ===== Squared L2 distance =====
-            // The straightforward description:
-            float dist = 0;
-            for (size_t ds = 0; ds < Ds; ++ds) {
-                float diff = v(m * Ds + ds) - codewords_[m][ks][ds];
-                dist += diff * diff;
-            }
-            dtable[m][ks] = dist;
-            // ===== SSE version. These codes are as the same as the above ones =====
-            /* Not implemented yet */
+            dtable[m][ks] = fvec_L2sqr(&(v(m * Ds)), codewords_[m][ks].data(), Ds);
         }
     }
     return dtable;

@@ -232,6 +232,17 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(e.codes, None)
         self.assertEqual(len(e.posting_lists), 0)
 
+    ### For debugging ###
+    # def test_runtime(self):
+    #     import time
+    #     M, Ks, N, D = 8, 256, 100000, 128
+    #     X = np.random.random((N, D)).astype(np.float32)
+    #     e = rii.Rii(fine_quantizer=nanopq.PQ(M=M, Ks=Ks, verbose=True).fit(vecs=X[:1000])).add_configure(vecs=X)
+    #     Q = np.random.random((10000, D)).astype(np.float32)
+    #     t0 = time.time()
+    #     for q in Q:
+    #         e.query(q=q, topk=3, method='ivf')
+    #     print(time.time() - t0, "sec")
 
 if __name__ == '__main__':
     unittest.main()
