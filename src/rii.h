@@ -76,6 +76,11 @@ RiiCpp::RiiCpp(const py::array_t<float> &codewords, bool verbose)
             }
         }
     }
+
+    if (verbose_) {
+        // Check which SIMD functions are used. See distance.h for this global variable.
+        std::cout << "SIMD support: " << g_simd_architecture << std::endl;
+    }
 }
 
 void RiiCpp::Reconfigure(int nlist, int iter)
