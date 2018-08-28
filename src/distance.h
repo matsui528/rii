@@ -184,7 +184,7 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
 }
 
 #else
-static const std::string g_architecture = "sse";
+static const std::string g_simd_architecture = "sse";
 
 
 // This function is from Faiss
