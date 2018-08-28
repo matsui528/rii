@@ -6,8 +6,9 @@
 Installation
 -------------
 You can install the stable version of the package via pip.
-This library works with Python 3.5+ on linux.
-OpenMP is required for parallel search.
+The library works with Python 3.5+ on linux.
+Note that OpenMP is required for parallel search.
+
 
 ::
 
@@ -20,6 +21,9 @@ The latest version can be manually built/tested by
     $ git clone --recursive https://github.com/matsui528/rii.git
     $ cd rii
     $ make test
+
+
+
 
 
 Contents
