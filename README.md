@@ -109,6 +109,25 @@ with open('rii.pkl', 'rb') as f:
     e_dumped = pickle.load(f)  # e_dumped is identical to e
 ```
 
+### Utils
+```python
+# Print the current parameters
+e.print_params()
+
+# Delete all PQ-codes and posting lists. fine_quantizer is kept.
+e.clear()
+
+# You can merge two Rii instances if they have the same fine_quantizer
+e1 = rii.Rii(fine_quantizer=codec)
+e2 = rii.Rii(fine_quantizer=codec)
+e1.add_reconfigure(vecs=X1)
+e2.add_reconfigure(vecs=X2)
+e1.merge(e2)  # e1 will have (PQ-codes of) both X1 and X2
+
+# You can switch the verbose flag
+e.verbose = False
+```
+
 ## [Examples](./examples)
 - [Simple tag search](./examples/tag_search/simple_tag_search.ipynb)
 
