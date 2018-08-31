@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/matsui528/rii.svg?branch=master)](https://travis-ci.org/matsui528/rii)
 [![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/rii.svg)](https://badge.fury.io/py/rii)
 
 
 
