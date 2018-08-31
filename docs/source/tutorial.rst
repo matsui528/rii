@@ -72,6 +72,10 @@ Compared to PQ, OPQ is little bit slower for encoding/searching but slightly mor
     # Prepare a PQ/OPQ codec with M=32 sub spaces
     codec = nanopq.PQ(M=32, Ks=256, verbose=True).fit(vecs=Xt)  # Trained using Xt
 
+Here, ``M`` is a parameter to control the runtime, accuracy, and memory-consumption.
+Each input vector is divided by ``M`` parts later (hence ``D`` must be dividable by ``M``).
+With a larger ``M`` value, the search becomes more accurate but slower with a larger memory footprint.
+Another parameter ``Ks`` can be 256 for usual cases.
 See `the tutorial of nanopq <https://nanopq.readthedocs.io/en/latest/source/tutorial.html>`_
 for more details about the parameter selection of the codec.
 Note that you can use ``X`` or the part of ``X`` for training if you
@@ -122,8 +126,7 @@ Inside this function, :func:`rii.Rii.add` and :func:`rii.Rii.reconfigure` are ca
 
 Make sure that you must call :func:`rii.Rii.add_configure` (not :func:`rii.Rii.add`)
 for the first data addition. It is because you need to create coarse centers (posting lists).
-Note that, if you would like to add vectors sequentially
-when constructing the class, please refer this; :ref:`sequential_add`
+Note that, if you would like to add vectors sequentially, please refer this; :ref:`sequential_add`
 
 
 .. hint::

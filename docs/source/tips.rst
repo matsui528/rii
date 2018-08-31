@@ -39,28 +39,32 @@ Some useful tips for tuning of search parameters:
 
 .. _sequential_add:
 
-Initializing a Rii class by adding vectors sequentially
+Adding vectors sequentially
 --------------------------------------------------------
 
-For the first data addition, one might want to add vectors one by one.
+You might want to add vectors one by one.
 There are two ways to achieve that.
 
 The first option is simply calling :func:`rii.Rii.add_configure` everytime.
 
 .. code-block:: python
 
+    # Suppose X is a set of vectors (np.ndarray with the shape (N, D))
     e = rii.Rii(fine_quantizer=codec)
     for x in X:
         e.add_configure(vecs=x.reshape(1, -1))  # Don't forget reshaping (D, ) to (1, D)
 
-This works perfectly. But this would take time if you would like to add many vectors
-by this way.
-It is because the reconfigure function is called (i.e., posting lists are computed from
-scrath) whenever each vector ``x`` is added.
+This works perfectly.
+But this would take time if you would like to add many vectors by this way.
+It is because the :func:`rii.Rii.reconfigure` function is called
+(inside :func:`rii.Rii.add_configure`) whenever a new vector ``x`` is added.
+The reconfiguration step creates postings list from scratch,
+that does not need to be run for every addition.
 
-Alternatively, you can call :func:`add` for each ``x`` without updating
+
+Alternatively, you can call :func:`rii.Rii.add` for each ``x`` without updating
 the posting lists, and run
-:func:`reconfigure` finally.
+:func:`rii.Rii.reconfigure` finally.
 
 .. code-block:: python
 
@@ -69,8 +73,28 @@ the posting lists, and run
         e.add(vecs=x.reshape(1, -1))  # Don't forget reshaping (D, ) to (1, D)
     e.reconfigure()
 
-This is much faster. The final result of both ways are same.
-But you must call :func:`rii.Rii.reconfigure` in the final step to create posting lists.
+This is much faster. The final results from both ways are identical.
+Please remember that you must call :func:`rii.Rii.reconfigure` in the final step to create posting lists.
+
+Note that, if you receive your data in a batch way, that can be handled in the same manner:
+
+.. code-block:: python
+
+    # X1 is a set of vectors (batch). Xs is a set of batches.
+    # You might receive Xs as a generator/iterator
+    # because the whole Xs is too large to read on memory at once
+    Xs = [X1, X2, X3]
+
+    # Running "add_configure" everytime
+    e1 = rii.Rii(fine_quantizer=codec)
+    for X in Xs:
+        e1.add_configure(vecs=X)
+
+    # Or, you can run "add" for each batch, and finally run "reconfigure"
+    e2 = rii.Rii(fine_quantizer=codec)
+    for X in Xs:
+        e2.add(vecs=X)
+    e2.reconfigure()
 
 
 
