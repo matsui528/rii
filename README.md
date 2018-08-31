@@ -3,13 +3,14 @@
 
 [![Build Status](https://travis-ci.org/matsui528/rii.svg?branch=master)](https://travis-ci.org/matsui528/rii)
 [![Documentation Status](https://readthedocs.org/projects/rii/badge/?version=latest)](https://rii.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/rii.svg)](https://badge.fury.io/py/rii)
 
 
 
 
 
 
-Reconfigurable Inverted Index (Rii): fast and memory efficient approximate nearest neighbor search method
+Reconfigurable Inverted Index (Rii): IVFPQ-based fast and memory efficient approximate nearest neighbor search method
 with a subset-search functionality.
 
 Reference:
@@ -19,9 +20,9 @@ Reference:
 ![](http://yusukematsui.me/project/rii/img/teaser1.png)  |  ![](http://yusukematsui.me/project/rii/img/teaser2.png)
 :---:|:---:
 The search can be operated for a subset of a database. | Rii remains fast even after many new items are added.
-- Fast and memory efficient ANN. Can handle billion-scale data on memory at once. The search is less than 10 ms.
-- Can run the search over a **subset** of the whole database
-- Remain fast even after a large number of vectors are newly added (i.e., the data structure can be **reconfigured**)
+- Fast and memory efficient ANN. Rii enables you to run billion-scale search in less than 10 ms.
+- You can run the search over a **subset** of the whole database
+- Rii Remains fast even after many vectors are newly added (i.e., the data structure can be **reconfigured**)
 
 
 ## Installing
@@ -62,12 +63,12 @@ e.add_configure(vecs=X)
 ids, dists = e.query(q=q, topk=3)
 print(ids, dists)  # e.g., [7484 8173 1556] [15.06257439 15.38533878 16.16935158]
 ```
-Note that, if you want, you can construct a codec at the same time as the instantiation of the Rii class
+Note that you can construct a PQ codec and instantiate the Rii class at the same time if you want.
 ```python
 e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt))
 e.add_configure(vecs=X)
 ```
-Furthermore, you can even construct the class and add the vectors in one line
+Furthermore, you can even write them in one line by chaining a function.
 ```python
 e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 ```
@@ -109,7 +110,7 @@ with open('rii.pkl', 'rb') as f:
     e_dumped = pickle.load(f)  # e_dumped is identical to e
 ```
 
-### Utils
+### Util functions
 ```python
 # Print the current parameters
 e.print_params()
@@ -117,15 +118,16 @@ e.print_params()
 # Delete all PQ-codes and posting lists. fine_quantizer is kept.
 e.clear()
 
+# You can switch the verbose flag
+e.verbose = False
+
 # You can merge two Rii instances if they have the same fine_quantizer
 e1 = rii.Rii(fine_quantizer=codec)
 e2 = rii.Rii(fine_quantizer=codec)
 e1.add_reconfigure(vecs=X1)
 e2.add_reconfigure(vecs=X2)
-e1.merge(e2)  # e1 will have (PQ-codes of) both X1 and X2
+e1.merge(e2)  # Now e1 contains both X1 and X2
 
-# You can switch the verbose flag
-e.verbose = False
 ```
 
 ## [Examples](./examples)

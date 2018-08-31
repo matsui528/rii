@@ -338,7 +338,10 @@ class Rii(object):
         print("nlist:", self.nlist)
         print("L0:", self.L0)
         print("cordwords.shape:", self.codewords.shape)
-        print("coarse_centers.shape:", self.coarse_centers.shape)
+        if self.nlist == 0:
+            print("coarse_centers.shape:", None)
+        else:
+            print("coarse_centers.shape:", self.coarse_centers.shape)
 
         if self.codes is None:
             print("codes.shape:", None)
