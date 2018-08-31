@@ -1,7 +1,7 @@
 Changelog
 =============
 
-v0.2.2 (August XX, 2018)
+v0.2.2 (August 31, 2018)
 ----------------------------
 - `#14 <https://github.com/matsui528/rii/pull/14>`_ Build on Mac with clang (without OpenMP)
 - `#16 <https://github.com/matsui528/rii/pull/16>`_ SIMD implementation for squared L2 distance (SSE, AVX, and AVX512)
