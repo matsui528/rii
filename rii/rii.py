@@ -107,6 +107,7 @@ class Rii(object):
 
     @verbose.setter
     def verbose(self, v):
+        self.fine_quantizer.verbose = v
         self.impl_cpp.verbose = v
 
     @property
