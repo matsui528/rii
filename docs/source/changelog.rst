@@ -3,7 +3,7 @@ Changelog
 
 v0.2.3 (September XX, 2018)
 ----------------------------
-- `#20 <https://github.com/matsui528/rii/pull/21>`_ Bug fix
+- `#21 <https://github.com/matsui528/rii/pull/21>`_ Bug fix
 
 
 v0.2.2 (August 31, 2018)
