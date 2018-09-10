@@ -29,7 +29,7 @@ after new items are added.
 
 Th core part of Rii is implemented in C++11, and bound to the Python interface
 by `pybind11 <https://github.com/pybind/pybind11>`_.
-The search is automatically parallelized by `OpenMP <https://www.openmp.org/>`_.
+Encoding is automatically parallelized by `OpenMP <https://www.openmp.org/>`_.
 The package is tested on linux with g++.
 It should work on Mac with clang (without OpenMP) as well, but not fully tested.
 

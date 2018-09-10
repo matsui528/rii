@@ -104,3 +104,7 @@ You can turn on/off the verbose flag via ``e.verbose = True`` or ``e.verbose = F
 decided by the verbose flag of the codec.
 
 
+Version
+---------------
+The version of the package can be checked via ``rii.__version__``.
+
