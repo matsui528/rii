@@ -2,6 +2,7 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 import sys
 import setuptools
+import re
 
 with open('README.md') as f:
     readme = f.read()
@@ -10,6 +11,9 @@ with open('requirements.txt') as f:
     requirements = []
     for line in f:
         requirements.append(line.rstrip())
+
+with open('rii/__init__.py') as f:
+    version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 
 
 class get_pybind_include(object):
@@ -97,15 +101,19 @@ class BuildExt(build_ext):
         if not sys.platform == 'darwin':
             opts.append('-fopenmp')  # For pqk-means
         opts.append('-march=native')  # For fast SIMD computation of L2 distance
+        opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
+        opts.append('-Ofast')  # This makes the program faster
+
         for ext in self.extensions:
             ext.extra_compile_args = opts
             if not sys.platform == 'darwin':
                 ext.extra_link_args = ['-fopenmp']  # Because of PQk-means
+
         build_ext.build_extensions(self)
 
 setup(
     name='rii',
-    version='0.2.2',
+    version=version,
     description='Fast and memory-efficient ANN with a subset-search functionality',
     long_description=readme,
     long_description_content_type='text/markdown',

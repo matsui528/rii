@@ -4,6 +4,7 @@ Changelog
 v0.2.3 (September XX, 2018)
 ----------------------------
 - `#21 <https://github.com/matsui528/rii/pull/21>`_ Bug fix
+- `#22 <https://github.com/matsui528/rii/pull/22>`_ Optimization for search
 
 
 v0.2.2 (August 31, 2018)

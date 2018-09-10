@@ -33,7 +33,7 @@ Some useful tips for tuning of search parameters:
     passing it to the query function, and call :func:`rii.Rii.query` with
     ``sort_target_ids=False``.
 
-  - Try a smaller ``L`` such as ``e.query(q=q, L=e.L0 / 2)``.
+  - Try a smaller ``L`` such as ``e.query(q=q, L=int(e.L0 / 2))``.
     This is not strongly recommended because the accuracy gets worse).
 
 
@@ -103,4 +103,8 @@ Verbose flag
 You can turn on/off the verbose flag via ``e.verbose = True`` or ``e.verbose = False``. The default value is
 decided by the verbose flag of the codec.
 
+
+Version
+---------------
+The version of the package can be checked via ``rii.__version__``.
 
