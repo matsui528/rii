@@ -15,6 +15,23 @@ namespace py = pybind11;
 
 namespace rii {
 
+
+struct DistanceTable{
+    // Helper structure. This is identical to vec<vec<float>> dt(M, vec<float>(Ks))
+    DistanceTable() {}
+    DistanceTable(size_t M, size_t Ks) : Ks_(Ks), data_(M * Ks) {}
+    void SetVal(size_t m, size_t ks, float val) {
+        data_[m * Ks_ + ks] = val;
+    }
+    float GetVal(size_t m, size_t ks) const {
+        return data_[m * Ks_ + ks];
+    }
+    size_t Ks_;
+    std::vector<float> data_;
+};
+
+
+
 class RiiCpp {
 public:
     RiiCpp() {}  // Shouldn't be default-constructed
@@ -37,9 +54,9 @@ public:
 
     // ===== Functions that would not be called from Python (Used inside c++) =====
     void UpdatePostingLists(size_t start, size_t num);
-    std::vector<std::vector<float>> DTable(const py::array_t<float> &vec) const;
-    float ADist(const std::vector<std::vector<float>> &dtable, const std::vector<unsigned char> &code) const;
-    float ADist(const std::vector<std::vector<float>> &dtable, const std::vector<unsigned char> &flattened_codes, size_t n) const;
+    DistanceTable DTable(const py::array_t<float> &vec) const;
+    float ADist(const DistanceTable &dtable, const std::vector<unsigned char> &code) const;
+    float ADist(const DistanceTable &dtable, const std::vector<unsigned char> &flattened_codes, size_t n) const;
     std::pair<std::vector<size_t>, std::vector<float>> PairVectorToVectorPair(const std::vector<std::pair<size_t, float>> &pair_vec) const;
 
     // Property getter
@@ -180,7 +197,7 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryLinear(const py
     assert((size_t) topk <= GetN());
 
     // ===== (1) Create dtable =====
-    std::vector<std::vector<float>> dtable = DTable(query);
+    DistanceTable dtable = DTable(query);
 
     // ===== (2) Run PQ linear search =====
     // [todo] Can be SIMDized?
@@ -229,12 +246,12 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryIvf(const py::a
     assert(topk <= L && (size_t) L <= GetN());
 
     // ===== (1) Create dtable =====
-    std::vector<std::vector<float>> dtable = DTable(query);
+    DistanceTable dtable = DTable(query);
 
     // ===== (2) Compare to coarse centers and sort the results =====
     std::vector<std::pair<size_t, float>> scores_coarse(coarse_centers_.size());
     size_t nlist = GetNumList();
-#pragma omp parallel for
+//#pragma omp parallel for
     for (size_t no = 0; no < nlist; ++no) {
         scores_coarse[no] = {no, ADist(dtable, coarse_centers_[no])};
     }
@@ -272,7 +289,7 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryIvf(const py::a
             }
 
             // ===== (6) Evaluate n =====
-            scores.push_back({n, ADist(dtable, flattened_codes_, n)});
+            scores.emplace_back(n, ADist(dtable, flattened_codes_, n));
 
             // ===== (7) If scores are collected enough =====
             if (scores.size() == (size_t) L) {
@@ -333,37 +350,37 @@ void RiiCpp::UpdatePostingLists(size_t start, size_t num)
     }
 }
 
-std::vector<std::vector<float> > RiiCpp::DTable(const py::array_t<float> &vec) const
+DistanceTable RiiCpp::DTable(const py::array_t<float> &vec) const
 {
     const auto &v = vec.unchecked<1>();
     size_t Ds = codewords_[0][0].size();
     assert((size_t) v.shape(0) == M_ * Ds);
-    std::vector<std::vector<float>> dtable(M_, std::vector<float>(Ks_));
+    DistanceTable dtable(M_, Ks_);
     for (size_t m = 0; m < M_; ++m) {
         for (size_t ks = 0; ks < Ks_; ++ks) {
-            dtable[m][ks] = fvec_L2sqr(&(v(m * Ds)), codewords_[m][ks].data(), Ds);
+            dtable.SetVal(m, ks, fvec_L2sqr(&(v(m * Ds)), codewords_[m][ks].data(), Ds));
         }
     }
     return dtable;
 }
 
-float RiiCpp::ADist(const std::vector<std::vector<float> > &dtable, const std::vector<unsigned char> &code) const
+float RiiCpp::ADist(const DistanceTable &dtable, const std::vector<unsigned char> &code) const
 {
     assert(code.size() == M_);
     float dist = 0;
     for (size_t m = 0; m < M_; ++m) {
         unsigned char ks = code[m];
-        dist += dtable[m][ks];
+        dist += dtable.GetVal(m, ks);
     }
     return dist;
 }
 
-float RiiCpp::ADist(const std::vector<std::vector<float>> &dtable, const std::vector<unsigned char> &flattened_codes, size_t n) const
+float RiiCpp::ADist(const DistanceTable &dtable, const std::vector<unsigned char> &flattened_codes, size_t n) const
 {
     float dist = 0;
     for (size_t m = 0; m < M_; ++m) {
         unsigned char ks = NthCodeMthElement(flattened_codes, n, m);
-        dist += dtable[m][ks];
+        dist += dtable.GetVal(m, ks);
     }
     return dist;
 }
