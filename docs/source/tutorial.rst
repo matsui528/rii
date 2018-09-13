@@ -336,6 +336,7 @@ More examples
 See more advanced examples as follows
 
 - `Simple tag search <https://github.com/matsui528/rii/tree/master/examples/tag_search/simple_tag_search.ipynb>`_
+- `Benchmark using SIFT1M/SIFT1B <https://github.com/matsui528/rii/tree/master/examples/benchmark/>`_
 
 
 
