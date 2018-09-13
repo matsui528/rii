@@ -132,6 +132,7 @@ e1.merge(e2)  # Now e1 contains both X1 and X2
 
 ## [Examples](./examples)
 - [Simple tag search](./examples/tag_search/simple_tag_search.ipynb)
+- [Benchmark](./examples/benchmark/)
 
 ## Author
 - [Yusuke Matsui](http://yusukematsui.me)
