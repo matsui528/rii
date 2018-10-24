@@ -19,7 +19,7 @@ conda install -c pytorch faiss-cpu
 
 Now you can run the benchmark script:
 ```bash
-python sift1m.py
+python run_sift1m.py
 ```
 
 
@@ -41,7 +41,7 @@ pip install texmex-python more-itertools
 
 Now you can run the benchmark script:
 ```bash
-python sift1b.py
+python run_sift1b.py
 ```
 
 Note that the codec and the search instane will be cached in `./cache`. You can use files there to run the search again.
