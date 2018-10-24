@@ -14,7 +14,7 @@ Reconfigurable Inverted Index (Rii): IVFPQ-based fast and memory efficient appro
 with a subset-search functionality.
 
 Reference:
-- [Y. Matsui](http://yusukematsui.me/), [R. Hinami](http://www.satoh-lab.nii.ac.jp/member/hinami/), and [S. Satoh](http://research.nii.ac.jp/~satoh/index.html), "**Reconfigurable Inverted Index**", ACM Multimedia 2018 (oral). [**[paper](https://arxiv.org/pdf/1808.03969)**] [**[project](http://yusukematsui.me/project/rii/rii.html)**]
+- [Y. Matsui](http://yusukematsui.me/), [R. Hinami](http://www.satoh-lab.nii.ac.jp/member/hinami/), and [S. Satoh](http://research.nii.ac.jp/~satoh/index.html), "**Reconfigurable Inverted Index**", ACM Multimedia 2018 (oral). [**[paper](https://dl.acm.org/ft_gateway.cfm?id=3240630)**] [**[project](http://yusukematsui.me/project/rii/rii.html)**]
 
 ## Summary of features
 ![](http://yusukematsui.me/project/rii/img/teaser1.png)  |  ![](http://yusukematsui.me/project/rii/img/teaser2.png)
