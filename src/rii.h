@@ -297,9 +297,9 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryIvf(const py::a
             }
         }
 
-        // If w coarse centers are traversed and still L items are not found,
+        // If w coarse centers are traversed and still L items are not found while more than topk items are found,
         // we terminate the process and do the final reranking
-        if ( (size_t) coarse_cnt == w) {
+        if ( (size_t) coarse_cnt == w && scores.size() >= (unsigned long) topk) {
 finish:
             // ===== (8) Sort them =====
             std::partial_sort(scores.begin(), scores.begin() + topk, scores.end(),
