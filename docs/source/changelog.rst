@@ -2,7 +2,7 @@ Changelog
 =============
 
 
-v0.2.4 (November 24, 2018)
+v0.2.4 (November 25, 2018)
 ----------------------------
 - `#29 <https://github.com/matsui528/rii/pull/29>`_ Bug fix
 
