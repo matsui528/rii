@@ -1,6 +1,10 @@
 Changelog
 =============
 
+v0.2.6 (August 1, 2019)
+----------------------------
+- `#33 <https://github.com/matsui528/rii/pull/33>`_ Bug fix to install pybind11 without error
+
 
 v0.2.5 (August 1, 2019)
 ----------------------------
