@@ -2,6 +2,11 @@ Changelog
 =============
 
 
+v0.2.5 (August 1, 2019)
+----------------------------
+- `#32 <https://github.com/matsui528/rii/pull/32>`_ Decouple pqkmeans submodule
+
+
 v0.2.4 (November 25, 2018)
 ----------------------------
 - `#29 <https://github.com/matsui528/rii/pull/29>`_ Bug fix

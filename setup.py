@@ -35,12 +35,11 @@ ext_modules = [
     Extension(
         'main',
         ['src/main.cpp',
-         'ext/pqkmeans/src/clustering/pqkmeans.cpp'],  # For c++ pqkmeans
+         'src/pqkmeans.cpp'],  # For c++ pqkmeans
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
-            get_pybind_include(user=True),
-            'ext/pqkmeans/src/clustering'  # For c++ pqkmeans
+            get_pybind_include(user=True)
         ],
         language='c++',
         undef_macros=['NDEBUG'],  # This makes sure assert() works

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cassert>
-#include "pqkmeans.h"
+#include "./pqkmeans.h"
 #include "./distance.h"
 
 // For py::array_t
