@@ -13,6 +13,10 @@ jobs:
         python-version: [3.5]  #, 3.6, 3.7, 3.8]
         # https://stackoverflow.com/questions/57810623/how-to-select-the-c-c-compiler-used-for-a-github-actions-job:
         compiler: [gcc, clang]
+        # Don't check ubuntu+clang
+        exclude:
+          - os: ubuntu-latest
+            compiler: clang
 
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +27,6 @@ jobs:
     - name: Print machine info
       run: |
         uname -a
-        which clang
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -31,8 +34,15 @@ jobs:
     - name: Test with pytest using CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
-#        echo "Check oenmp:"
-#        echo | cpp -fopenmp -dM | grep -i open
       run: |
         pip install pytest
         make test
+
+#    - name: Test with pytest using CC=${{ matrix.compiler }}
+#      env:
+#        CC: ${{ matrix.compiler }}
+##        echo "Check oenmp:"
+##        echo | cpp -fopenmp -dM | grep -i open
+#      run: |
+#        pip install pytest
+#        make test
