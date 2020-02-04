@@ -92,7 +92,7 @@ class BuildExt(build_ext):
     if sys.platform == 'darwin':
         # -fsized-deallocation is required to make the lib works for macosx? Just in case
         # https://github.com/pybind/pybind11/issues/1604
-        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7', '-fsized-deallocation']
+        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7', '-fno-sized-deallocation']
 
     def build_extensions(self):
         ct = self.compiler.compiler_type
