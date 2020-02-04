@@ -1,6 +1,11 @@
 Changelog
 =============
 
+v0.2.7 (February 4, 2020)
+----------------------------
+- `#36 <https://github.com/matsui528/rii/pull/36>`_ Support Mac OS (with both gcc and clang)
+
+
 v0.2.6 (August 1, 2019)
 ----------------------------
 - `#33 <https://github.com/matsui528/rii/pull/33>`_ Bug fix to install pybind11 without error
