@@ -1,0 +1,38 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.5, 3.6, 3.7, 3.8]
+        # https://stackoverflow.com/questions/57810623/how-to-select-the-c-c-compiler-used-for-a-github-actions-job:
+        compiler: [gcc, clang]
+        # Don't check ubuntu+clang
+        exclude:
+          - os: ubuntu-latest
+            compiler: clang
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Print machine info
+      run: |
+        uname -a
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Test with CC=${{ matrix.compiler }}
+      env:
+        CC: ${{ matrix.compiler }}
+      run: |
+        make test
