@@ -103,16 +103,16 @@ class BuildExt(build_ext):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
-        # if not sys.platform == 'darwin':
-        #     opts.append('-fopenmp')  # For pqk-means
+        if not sys.platform == 'darwin':
+            opts.append('-fopenmp')  # For pqk-means
         opts.append('-march=native')  # For fast SIMD computation of L2 distance
         opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
         opts.append('-Ofast')  # This makes the program faster
 
         for ext in self.extensions:
             ext.extra_compile_args = opts
-            # if not sys.platform == 'darwin':
-            #     ext.extra_link_args = ['-fopenmp']  # Because of PQk-means
+            if not sys.platform == 'darwin':
+                ext.extra_link_args = ['-fopenmp']  # Because of PQk-means
 
         build_ext.build_extensions(self)
 
