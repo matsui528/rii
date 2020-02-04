@@ -31,8 +31,8 @@ jobs:
     - name: Test with pytest using CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
-      run: |
 #        echo "Check oenmp:"
 #        echo | cpp -fopenmp -dM | grep -i open
+      run: |
         pip install pytest
         make test
