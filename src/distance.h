@@ -2,6 +2,7 @@
 #define DISTANCE_H
 
 // http://koturn.hatenablog.com/entry/2016/07/18/090000
+// windows is not supported, but just in case (later someone might implement)
 #ifdef _MSC_VER
 #  include <intrin.h>
 #else
