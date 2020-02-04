@@ -1,4 +1,4 @@
-name: Testing Rii
+name: Build
 
 on: [push]
 
@@ -31,17 +31,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Test with pytest using CC=${{ matrix.compiler }}
+    - name: Test with CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
       run: |
         make test
-
-#    - name: Test with pytest using CC=${{ matrix.compiler }}
-#      env:
-#        CC: ${{ matrix.compiler }}
-##        echo "Check oenmp:"
-##        echo | cpp -fopenmp -dM | grep -i open
-#      run: |
-#        pip install pytest
-#        make test
