@@ -1,7 +1,13 @@
 #ifndef DISTANCE_H
 #define DISTANCE_H
 
-#include <x86intrin.h>
+// http://koturn.hatenablog.com/entry/2016/07/18/090000
+#ifdef _MSC_VER
+#  include <intrin.h>
+#else
+#  include <x86intrin.h>
+#endif
+
 
 // These fast L2 squared distance codes (SSE and AVX) are from the Faiss library:
 // https://github.com/facebookresearch/faiss/blob/master/utils.cpp
