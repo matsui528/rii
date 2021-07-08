@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         # https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/
-        os: [ubuntu-latest, macos-latest]
+        # os: [ubuntu-latest, macos-latest]
+        os: [windows-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
         # https://stackoverflow.com/questions/57810623/how-to-select-the-c-c-compiler-used-for-a-github-actions-job:
         compiler: [gcc, clang]
