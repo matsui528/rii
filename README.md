@@ -9,6 +9,7 @@
 
 
 
+
 Reconfigurable Inverted Index (Rii): IVFPQ-based fast and memory efficient approximate nearest neighbor search method
 with a subset-search functionality.
 
