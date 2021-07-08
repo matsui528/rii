@@ -6,7 +6,7 @@
 Installation
 -------------
 You can install the stable version of the package via pip.
-The library works with Python 3.5+ on linux.
+The library works with Python 3.5+ on linux/mac/wsl.
 Note that OpenMP is required for parallel encoding.
 
 

@@ -9,8 +9,10 @@ jobs:
     strategy:
       matrix:
         # https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/
-        # os: [ubuntu-latest, macos-latest]
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest]
+        # Note that we cannot build rii for windows now because SIMD codes don't work for windows. Need to include other headers for windows?
+        # https://stackoverflow.com/questions/11228855/header-files-for-x86-simd-intrinsics
+        # os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
         # https://stackoverflow.com/questions/57810623/how-to-select-the-c-c-compiler-used-for-a-github-actions-job:
         compiler: [gcc, clang]
