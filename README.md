@@ -26,7 +26,7 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 
 
 ## Installing
-You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl.
+You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 (x64, /arch:AVX2).
 ```
 pip install rii
 ```
