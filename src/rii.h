@@ -339,7 +339,7 @@ void RiiCpp::UpdatePostingLists(size_t start, size_t num)
     clustering_instance.SetClusterCenters(coarse_centers_);
 
     // ===== (2) Update posting lists =====
-    std::vector<int> assign(num);
+    std::vector<size_t> assign(num);
 #pragma omp parallel for
     for (size_t n = 0; n < num; ++n) {
         assign[n] = clustering_instance.predict_one(NthCode(flattened_codes_, start + n));

@@ -72,7 +72,7 @@ def cpp_flag(compiler):
     """Return the -std=c++[11/14/17] compiler flag.
     The newer version is prefered over c++11 (when it is available).
     """
-    flags = ['-std=c++14', '-std=c++11']  # https://stackoverflow.com/questions/57456419/errors-building-python-example-from-pybind11-docs-on-macos
+    flags = ['-std=c++17', '-std=c++14', '-std=c++11']  # https://stackoverflow.com/questions/57456419/errors-building-python-example-from-pybind11-docs-on-macos
 
     for flag in flags:
         if has_flag(compiler, flag): return flag
@@ -84,7 +84,7 @@ def cpp_flag(compiler):
 class BuildExt(build_ext):
     """A custom build extension for adding compiler-specific options."""
     c_opts = {
-        'msvc': ['/EHsc'],
+        'msvc': ['/EHsc', '/arch:AVX2'], # '/arch:AVX512' , '/arch:AVX2'
         'unix': [],
     }
 
@@ -103,11 +103,14 @@ class BuildExt(build_ext):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
-        if not sys.platform == 'darwin':
+            opts.append('/openmp:llvm') # support for openmp 3.0 or above
+            opts.append('/fp:fast') # -Ofast
+
+        if sys.platform not in ['darwin', 'win32']:
             opts.append('-fopenmp')  # For pqk-means
-        opts.append('-march=native')  # For fast SIMD computation of L2 distance
-        opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
-        opts.append('-Ofast')  # This makes the program faster
+            opts.append('-march=native')  # For fast SIMD computation of L2 distance
+            opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
+            opts.append('-Ofast')  # This makes the program faster
 
         for ext in self.extensions:
             ext.extra_compile_args = opts

@@ -1,4 +1,5 @@
-from .context import rii
+#from .context import rii
+import rii
 import unittest
 import numpy as np
 import nanopq
@@ -118,11 +119,11 @@ class TestSuite(unittest.TestCase):
             self.assertTrue(n in ids1)
 
             # Subset search w/ a full indices should be the same w/o target
-            ids2, dists2 = e.impl_cpp.query_linear(q, topk, np.arange(N))
+            ids2, dists2 = e.impl_cpp.query_linear(q, topk, np.arange(N, dtype=np.int64))
             self.assertListEqual(ids1, ids2)
             self.assertListEqual(dists1, dists2)
 
-            S = np.array([2, 24, 43, 55, 102, 139, 221, 542, 667, 873, 874, 899])
+            S = np.array([2, 24, 43, 55, 102, 139, 221, 542, 667, 873, 874, 899], dtype=np.int64)
             ids3, dists3 = e.impl_cpp.query_linear(q, topk, S)
             self.assertTrue(np.all([id in S for id in ids3]))
 
@@ -149,16 +150,16 @@ class TestSuite(unittest.TestCase):
             self.assertTrue(n in ids1)
 
             # Subset search w/ a full indices should be the same w/o target
-            ids2, dists2 = e.impl_cpp.query_ivf(q, topk, np.arange(N), L)
+            ids2, dists2 = e.impl_cpp.query_ivf(q, topk, np.arange(N, dtype=np.int64), L)
             self.assertListEqual(ids1, ids2)
             self.assertListEqual(dists1, dists2)
 
-            S = np.array([2, 24, 43, 55, 102, 139, 221, 542, 667, 873, 874, 899])
+            S = np.array([2, 24, 43, 55, 102, 139, 221, 542, 667, 873, 874, 899], dtype=np.int64)
             ids3, dists3 = e.impl_cpp.query_ivf(q, topk, S, L)
             self.assertTrue(np.all([id in S for id in ids3]))
 
             # When target_ids is all vectors and L=all, the results is the same as linear PQ scan
-            ids4, dists4 = e.impl_cpp.query_ivf(q, topk, np.arange(N), N)
+            ids4, dists4 = e.impl_cpp.query_ivf(q, topk, np.arange(N, dtype=np.int64), N)
             ids5, dists5 = e.impl_cpp.query_linear(q, topk, np.array([], dtype=np.int64))
             self.assertListEqual(ids4, ids5)
             self.assertListEqual(dists4, dists5)
@@ -192,11 +193,11 @@ class TestSuite(unittest.TestCase):
                 self.assertTrue(n in ids1)
 
                 # Subset search w/ a full indices should be the same w/o target
-                ids2, dists2 = e.query(q=q, topk=topk, target_ids=np.arange(N))
+                ids2, dists2 = e.query(q=q, topk=topk, target_ids=np.arange(N, dtype=np.int64))
                 self.assertTrue(np.allclose(ids1, ids2))
                 self.assertTrue(np.allclose(dists1, dists2))
 
-                S = np.array([2, 24, 43, 55, 102, 139, 221, 542, 667, 873, 874, 899])
+                S = np.array([2, 24, 43, 55, 102, 139, 221, 542, 667, 873, 874, 899], dtype=np.int64)
                 ids3, dists3 = e.query(q=q, topk=5, target_ids=S)
                 self.assertTrue(np.all([id in S for id in ids3]))
 
@@ -284,4 +285,5 @@ class TestSuite(unittest.TestCase):
     #     print(time.time() - t0, "sec")
 
 if __name__ == '__main__':
+    print("Starting Rii Test")
     unittest.main()
