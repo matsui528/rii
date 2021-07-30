@@ -32,7 +32,7 @@ You can install the package via pip. This library works with Python 3.5+ on linu
 pip install git+https://github.com/ashleyabraham/rii.git
 ```
 
-### Windows
+### Windows (notes)
 #### OpenMP
 In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
 
