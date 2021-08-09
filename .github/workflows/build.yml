@@ -13,10 +13,10 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
         # https://stackoverflow.com/questions/57810623/how-to-select-the-c-c-compiler-used-for-a-github-actions-job:
-        compiler: [gcc, clang]
+        compiler: [gcc]
         # Don't check ubuntu+clang
-        exclude:
-          - os: ubuntu-latest
+        include:
+          - os: macos-latest
             compiler: clang
 
     steps:
