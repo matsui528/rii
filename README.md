@@ -31,7 +31,7 @@ You can install the package via pip. This library works with Python 3.5+ on linu
 ```
 pip install git+https://github.com/ashleyabraham/rii.git
 ```
-or use pre-compiled binary for Windows 10
+or use pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
 
 ```
 pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.7/rii-0.2.7-cp38-cp38-win_amd64.whl
