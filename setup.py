@@ -107,10 +107,15 @@ class BuildExt(build_ext):
             opts.append('/fp:fast') # -Ofast
 
         if sys.platform not in ['darwin', 'win32']:
-            opts.append('-fopenmp')  # For pqk-means
+            # For linux
+            opts.append('-fopenmp')  # For pqk-means.
+
+        if sys.platform not in ['win32']:
+            # For linux and mac
             opts.append('-march=native')  # For fast SIMD computation of L2 distance
             opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
             opts.append('-Ofast')  # This makes the program faster
+
 
         for ext in self.extensions:
             ext.extra_compile_args = opts
