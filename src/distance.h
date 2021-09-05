@@ -61,7 +61,6 @@ static inline __m128 masked_read (int d, const float *x)
     // cannot use AVX2 _mm_mask_set1_epi32
 }
 
-//#ifdef __AVX__
 #if defined(__AVX__)
 // Reading function for AVX and AVX512
 // This function is from Faiss
@@ -84,7 +83,6 @@ static inline __m256 masked_read_8 (int d, const float *x)
 
 
 
-//#ifdef __AVX512F__
  #if defined(__AVX512F__) 
 // Reading function for AVX512
 // reads 0 <= d < 16 floats as __m512
@@ -109,7 +107,6 @@ static inline __m512 masked_read_16 (int d, const float *x)
 
 // ========================= Distance functions ============================
 
-//#ifdef __AVX512F__
 #if defined(__AVX512F__)  
 static const std::string g_simd_architecture = "avx512";
 
@@ -128,23 +125,29 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     }
 
     __m256 msum2 = _mm512_extractf32x8_ps(msum1, 1);
+    // msum2 += _mm512_extractf32x8_ps(msum1, 0);
     msum2 = _mm256_add_ps(msum2, _mm512_extractf32x8_ps(msum1, 0));
 
     while (d >= 8) {
         __m256 mx = _mm256_loadu_ps (x); x += 8;
         __m256 my = _mm256_loadu_ps (y); y += 8;
+        // const __m256 a_m_b1 = mx - my;
         const __m256 a_m_b1 = _mm256_sub_ps(mx, my);
+        // msum2 += a_m_b1 * a_m_b1;
         msum2 = _mm256_add_ps(msum2, _mm256_mul_ps(a_m_b1, a_m_b1));
         d -= 8;
     }
 
     __m128 msum3 = _mm256_extractf128_ps(msum2, 1);
+    // msum3 += _mm256_extractf128_ps(msum2, 0);
     msum3 = _mm_add_ps(msum3, _mm256_extractf128_ps(msum2, 0));
 
     if (d >= 4) {
         __m128 mx = _mm_loadu_ps (x); x += 4;
         __m128 my = _mm_loadu_ps (y); y += 4;
+        // const __m128 a_m_b1 = mx - my;
         const __m128 a_m_b1 = _mm_sub_ps(mx, my);
+        // msum3 += a_m_b1 * a_m_b1;
         msum3 = _mm_add_ps(msum3, _mm_mul_ps(a_m_b1, a_m_b1));
         d -= 4;
     }
@@ -152,7 +155,9 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     if (d > 0) {
         __m128 mx = masked_read (d, x);
         __m128 my = masked_read (d, y);
+        // __m128 a_m_b1 = mx - my;
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
+        // msum3 += a_m_b1 * a_m_b1;
         msum3 = _mm_add_ps(msum3, _mm_mul_ps(a_m_b1, a_m_b1));
     }
 
@@ -173,18 +178,23 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     while (d >= 8) {
         __m256 mx = _mm256_loadu_ps (x); x += 8;
         __m256 my = _mm256_loadu_ps (y); y += 8;
-        const __m256 a_m_b1 = _mm256_sub_ps(mx, my); // mx - my;
+        // const __m256 a_m_b1 = mx - my;
+        const __m256 a_m_b1 = _mm256_sub_ps(mx, my);
+        // msum1 += a_m_b1 * a_m_b1;
         msum1 = _mm256_add_ps(msum1, _mm256_mul_ps(a_m_b1 ,a_m_b1));
         d -= 8;
     }
 
     __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
+    // msum2 += _mm256_extractf128_ps(msum1, 0);
     msum2 =  _mm_add_ps(msum2, _mm256_extractf128_ps(msum1, 0));
 
     if (d >= 4) {
         __m128 mx = _mm_loadu_ps (x); x += 4;
         __m128 my = _mm_loadu_ps (y); y += 4;
+        // const __m128 a_m_b1 = mx - my;
         const __m128 a_m_b1 = _mm_sub_ps(mx, my);
+        // msum2 += a_m_b1 * a_m_b1;
         msum2 = _mm_add_ps(msum2, _mm_mul_ps(a_m_b1, a_m_b1));
         d -= 4;
     }
@@ -192,7 +202,9 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     if (d > 0) {
         __m128 mx = masked_read (d, x);
         __m128 my = masked_read (d, y);
+        // __m128 a_m_b1 = mx - my;
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
+        // msum2 += a_m_b1 * a_m_b1;
         msum2 = _mm_add_ps(msum2, _mm_mul_ps(a_m_b1, a_m_b1));
     }
 
@@ -214,7 +226,9 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     while (d >= 4) {
         __m128 mx = _mm_loadu_ps (x); x += 4;
         __m128 my = _mm_loadu_ps (y); y += 4;
+        // const __m128 a_m_b1 = mx - my;
         const __m128 a_m_b1 = _mm_sub_ps(mx, my);
+        // msum1 += a_m_b1 * a_m_b1;
         msum1 = _mm_add_ps(msum1, _mm_mul_ps(a_m_b1, a_m_b1));
         d -= 4;
     }
@@ -223,7 +237,9 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
         // add the last 1, 2 or 3 values
         __m128 mx = masked_read (d, x);
         __m128 my = masked_read (d, y);
+        // __m128 a_m_b1 = mx - my;
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
+        // msum1 += a_m_b1 * a_m_b1;
         msum1 = _mm_add_ps(msum1, _mm_mul_ps(a_m_b1, a_m_b1));
     }
 

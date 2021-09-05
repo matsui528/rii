@@ -29,29 +29,36 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 (x64, using MSVC:flags - /arch:AVX2, /openmp:llvm, /fp:fast').
 
 ```
-pip install git+https://github.com/ashleyabraham/rii.git
-```
-or use pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
-
-```
-pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.7/rii-0.2.7-cp38-cp38-win_amd64.whl
+pip install rii
 ```
 
 
-### Windows (notes)
-#### OpenMP
-In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
+<details>
+  <summary>For windows (maintained by [@ashleyabraham](https://github.com/ashleyabraham))</summary>
 
-`SET KMP_DUPLICATE_LIB_OK=TRUE`
+  ### Pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
+  ```
+  pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.7/rii-0.2.7-cp38-cp38-win_amd64.whl
+  ```
 
-#### SIMD
-The /arch:AVX2 flag is used in MSVC to set appropriate SIMD preprocessors and compiler intrinsics
+  ### OpenMP
+  In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
+
+  `SET KMP_DUPLICATE_LIB_OK=TRUE`
+
+  ### SIMD
+  The /arch:AVX2 flag is used in MSVC to set appropriate SIMD preprocessors and compiler intrinsics
+
+</details>
+
+
 
 
 ## [Documentation](https://rii.readthedocs.io/en/latest/index.html)
 - [Tutorial](https://rii.readthedocs.io/en/latest/source/tutorial.html)
 - [Tips](https://rii.readthedocs.io/en/latest/source/tips.html)
 - [API](https://rii.readthedocs.io/en/latest/source/api.html)
+
 
 ## Usage
 
@@ -104,13 +111,13 @@ print(ids, dists)  # e.g., [728  85 132] [14.80522156 15.92787838 16.28690338]
 ```python
 # Add new vectors
 X2 = np.random.random((1000, D)).astype(np.float32)
-e.add_configure(vecs=X2)  # Now N is 11000
+e.add(vecs=X2)  # Now N is 11000
 e.query(q=q)  # Ok. (0.12 msec / query)
 
 # However, if you add quite a lot of vectors, the search might become slower
 # because the data structure has been optimized for the initial item size (N=10000)
 X3 = np.random.random((1000000, D)).astype(np.float32) 
-e.add_configure(vecs=X3)  # A lot. Now N is 1011000
+e.add(vecs=X3)  # A lot. Now N is 1011000
 e.query(q=q)  # Slower (0.96 msec/query)
 
 # In such case, run the reconfigure function. That updates the data structure
@@ -156,3 +163,4 @@ e1.merge(e2)  # Now e1 contains both X1 and X2
 
 ## Credits
 - The logo is designed by [@richardbmx](https://github.com/richardbmx) ([#4](https://github.com/matsui528/rii/issues/4))
+- The windows implementation is by [@ashleyabraham](https://github.com/ashleyabraham) ([#42](https://github.com/matsui528/rii/pull/42))
