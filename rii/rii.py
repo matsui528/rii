@@ -317,7 +317,7 @@ class Rii(object):
         elif method == "ivf":
             ids, dists = self.impl_cpp.query_ivf(q_, topk, tids, L)
 
-        return np.array(ids), np.array(dists)
+        return np.array(ids, np.int64), np.array(dists)
 
     def clear(self):
         """Clear all data, i.e., (1) coarse_centers, (2) PQ-codes, (3) posting_lists, and (4) threshold function.
@@ -430,8 +430,8 @@ def estimate_best_threshold_function(e, queries):
 
         for s in sids:
             # Approximately evaluate the runtime with just three queries
-            t_linear0 = run(e=e, queries=queries[:3], L=L, method='linear', topk=topk, tids=np.arange(s))
-            t_ivf0 = run(e=e, queries=queries[:3], L=L, method='ivf', topk=topk, tids=np.arange(s))
+            t_linear0 = run(e=e, queries=queries[:3], L=L, method='linear', topk=topk, tids=np.arange(s, dtype=np.int64))
+            t_ivf0 = run(e=e, queries=queries[:3], L=L, method='ivf', topk=topk, tids=np.arange(s, dtype=np.int64))
 
             # If linear scan gets slower than ivf
             if t_ivf0 < t_linear0:
@@ -445,8 +445,8 @@ def estimate_best_threshold_function(e, queries):
                 s0, s1 = int(s / 2), s
                 for _ in range(5):
                     s_mid = int(np.round((s0 + s1) / 2))
-                    t_linear_mid = run(e=e, queries=queries, L=L, method='linear', topk=topk, tids=np.arange(s_mid))
-                    t_ivf_mid = run(e=e, queries=queries, L=L, method='ivf', topk=topk, tids=np.arange(s_mid))
+                    t_linear_mid = run(e=e, queries=queries, L=L, method='linear', topk=topk, tids=np.arange(s_mid, dtype=np.int64))
+                    t_ivf_mid = run(e=e, queries=queries, L=L, method='ivf', topk=topk, tids=np.arange(s_mid, dtype=np.int64))
                     if t_ivf_mid < t_linear_mid:
                         s1 = s_mid
                     else:
