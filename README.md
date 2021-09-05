@@ -34,7 +34,7 @@ pip install rii
 
 
 <details>
-  <summary>For windows (maintained by [@ashleyabraham](https://github.com/ashleyabraham))</summary>
+  <summary>For windows (maintained by @ashleyabraham)</summary>
 
   ### Pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
   ```
