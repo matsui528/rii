@@ -26,19 +26,22 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 
 
 ## Installing
-You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 (x64, using MSVC:flags - /arch:AVX2, /openmp:llvm, /fp:fast').
+You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 (x64, using MSVC:flags - /arch:AVX2, /openmp:llvm, /fp:fast')
+
+Requires MS Visual Studio Build tools to compile in windows
 
 ```
 pip install git+https://github.com/ashleyabraham/rii.git
 ```
-or use pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
+or use pre-compiled binary for Windows 10 
 
 ```
-pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.7/rii-0.2.7-cp38-cp38-win_amd64.whl
+pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp38-cp38-win_amd64.whl
 ```
 
 
 ### Windows (notes)
+Requires MS Visual Studio Build tools to compile in windows
 #### OpenMP
 In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
 
