@@ -144,8 +144,8 @@ e.verbose = False
 # You can merge two Rii instances if they have the same fine_quantizer
 e1 = rii.Rii(fine_quantizer=codec)
 e2 = rii.Rii(fine_quantizer=codec)
-e1.add_reconfigure(vecs=X1)
-e2.add_reconfigure(vecs=X2)
+e1.add_configure(vecs=X1)
+e2.add_configure(vecs=X2)
 e1.merge(e2)  # Now e1 contains both X1 and X2
 
 ```
