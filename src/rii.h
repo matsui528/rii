@@ -206,7 +206,7 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryLinear(const py
         size_t N = GetN();
         scores.resize(N);
 #pragma omp parallel for
-        for (size_t n = 0; n < N; ++n) {
+        for (long long n = 0; n < N; ++n) {
             scores[n] = {n, ADist(dtable, flattened_codes_, n)};
         }
     } else {  // Target ids are specified
@@ -214,7 +214,7 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryLinear(const py
         assert(S <= GetN());
         scores.resize(S);
 #pragma omp parallel for
-        for (size_t s = 0; s < S; ++s) {
+        for (long long s = 0; s < S; ++s) {
             size_t tid = static_cast<size_t>(tids(s));
             scores[s] = {tid, ADist(dtable, flattened_codes_, tid)};
         }
@@ -341,7 +341,7 @@ void RiiCpp::UpdatePostingLists(size_t start, size_t num)
     // ===== (2) Update posting lists =====
     std::vector<size_t> assign(num);
 #pragma omp parallel for
-    for (size_t n = 0; n < num; ++n) {
+    for (long long n = 0; n < num; ++n) {
         assign[n] = clustering_instance.predict_one(NthCode(flattened_codes_, start + n));
     }
 

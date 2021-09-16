@@ -103,7 +103,7 @@ class BuildExt(build_ext):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
-            opts.append('/openmp:llvm') # support for openmp 3.0 or above
+            opts.append('/openmp') 
             opts.append('/fp:fast') # -Ofast
 
         if sys.platform not in ['darwin', 'win32']:
