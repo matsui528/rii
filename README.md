@@ -97,7 +97,7 @@ e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 
 ```python
 # The search can be conducted over a subset of the database
-target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234])  # Specified by IDs
+target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234], dtype=np.int64)  # Specified by IDs
 ids, dists = e.query(q=q, topk=3, target_ids=target_ids)
 print(ids, dists)  # e.g., [728  85 132] [14.80522156 15.92787838 16.28690338]
 ```
@@ -144,8 +144,8 @@ e.verbose = False
 # You can merge two Rii instances if they have the same fine_quantizer
 e1 = rii.Rii(fine_quantizer=codec)
 e2 = rii.Rii(fine_quantizer=codec)
-e1.add_reconfigure(vecs=X1)
-e2.add_reconfigure(vecs=X2)
+e1.add_configure(vecs=X1)
+e2.add_configure(vecs=X2)
 e1.merge(e2)  # Now e1 contains both X1 and X2
 
 ```
