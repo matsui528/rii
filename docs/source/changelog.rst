@@ -1,6 +1,11 @@
 Changelog
 =============
 
+v0.2.8 (September 12, 2021)
+----------------------------
+- `#42 <https://github.com/matsui528/rii/pull/42>`_, `#43 <https://github.com/matsui528/rii/pull/43>`_ Support Windows
+
+
 v0.2.7 (February 4, 2020)
 ----------------------------
 - `#36 <https://github.com/matsui528/rii/pull/36>`_ Support Mac OS (with both gcc and clang)

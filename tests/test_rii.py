@@ -1,5 +1,4 @@
-#from .context import rii
-import rii
+from .context import rii
 import unittest
 import numpy as np
 import nanopq
@@ -53,6 +52,23 @@ class TestSuite(unittest.TestCase):
                 self.assertEqual(e.coarse_centers.shape, (nlist, M))
                 self.assertEqual(len(e.posting_lists), nlist)
                 self.assertEqual(sum([len(plist) for plist in e.posting_lists]), N)
+
+    def test_simple_add_configure(self):
+        M, Ks = 4, 20
+        N1, N2, D = 300, 700, 40
+        X1 = np.random.random((N1, D)).astype(np.float32)
+        X2 = np.random.random((N2, D)).astype(np.float32)
+        e = rii.Rii(fine_quantizer=nanopq.PQ(M=M, Ks=Ks, verbose=True).fit(vecs=X1))
+        e.add(vecs=X1)
+        self.assertEqual(e.N, N1)
+        e.add(vecs=X2)
+        self.assertEqual(e.N, N1 + N2)
+        for nlist in [5, 100]:
+            e.reconfigure(nlist=nlist)
+            self.assertEqual(e.nlist, nlist)
+            self.assertEqual(e.coarse_centers.shape, (nlist, M))
+            self.assertEqual(len(e.posting_lists), nlist)
+            self.assertEqual(sum([len(plist) for plist in e.posting_lists]), N1 + N2)
 
     def test_add_configure(self):
         M, Ks = 4, 20
