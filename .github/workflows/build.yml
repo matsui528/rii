@@ -43,6 +43,8 @@ jobs:
         pip install -r requirements.txt
     - name: Windows only setup
       uses: ilammy/msvc-dev-cmd@v1
+      with:
+        toolset: 14.x
     - name: Test with CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
