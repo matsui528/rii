@@ -44,7 +44,7 @@ jobs:
     - name: Windows only setup
       uses: ilammy/msvc-dev-cmd@v1
       with:
-        toolset: 14.x
+        toolset: 14.31
     - name: Test with CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
