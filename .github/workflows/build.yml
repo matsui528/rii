@@ -34,6 +34,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
+    - uses: ilammy/msvc-dev-cmd@v1
     - name: Print machine info
       run: |
         uname -a
