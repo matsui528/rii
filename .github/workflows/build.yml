@@ -41,7 +41,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Windows only setup
+      uses: ilammy/msvc-dev-cmd@v1
+        toolset:17.XX
     - name: Test with CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
