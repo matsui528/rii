@@ -50,7 +50,7 @@ jobs:
     #      toolset: '14.0'
     - name: Windows & Python 3.6 and above only setup
       if: ${{ matrix.os ==  'windows-latest' && matrix.python-version > '3.5'}}
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@v1.10
     - name: Test with CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
