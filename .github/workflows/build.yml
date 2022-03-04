@@ -27,6 +27,8 @@ jobs:
             compiler: clang
           - os: windows-latest
             compiler: gcc
+          #- os: windows-latest
+          #  python-version: '3.5'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -43,12 +45,12 @@ jobs:
         pip install -r requirements.txt
     - name: Windows & Python 3.5 only setup
       if: ${{ matrix.os ==  'windows-latest' && matrix.python-version == '3.5'}}
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@v1.10
       with:
           toolset: '14.0'
     - name: Windows & Python 3.6 and above only setup
       if: ${{ matrix.os ==  'windows-latest' && matrix.python-version > '3.5'}}
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@v1.10
     - name: Test with CC=${{ matrix.compiler }}
       env:
         CC: ${{ matrix.compiler }}
