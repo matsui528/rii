@@ -26,7 +26,7 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 
 
 ## Installing
-You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl and Python 3.6+ on Windows10(x64)
+You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 and Python 3.6+ on linux-latest/mac-latest/windows-latest
 
 ```
 pip install rii
@@ -46,10 +46,10 @@ pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.
 pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp37-cp37m-win_amd64.whl
    ```
   ### Installing in Windows 10 via Pip install
-  Requires MS Visual Studio Build tools C++ 14.0 toolset or above to compile and install via pip install
+  Requires MS Visual Studio Build tools C++ 14.0 or 14.1 toolset or above to compile and install via pip install
 
   #### OpenMP
-OpenMP requires libomp140_x86_64.dll to compile in windows, which is part of MS Visual Studio Build tools and it is not redistributable.
+  OpenMP requires libomp140_x86_64.dll to compile in windows, which is part of MS Visual Studio Build tools and it is not redistributable.
   
   In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
 
