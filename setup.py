@@ -136,7 +136,7 @@ setup(
     license='MIT',
     packages=find_packages(),
     install_requires=requirements,
-    setup_requires=['pybind11>=2.9'],
+    setup_requires=['pybind11>=2.3'],
     ext_modules=ext_modules,
     cmdclass={'build_ext': BuildExt},
     zip_safe=False

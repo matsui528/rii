@@ -6,16 +6,9 @@
 #include "./pqkmeans.h"
 #include "./distance.h"
 
-// Handle missing ssize_t on Windows. Typedef's taken from:
-// https://msdn.microsoft.com/en-us/library/windows/desktop/aa383751%28v=vs.85%29.aspx#LONG_PTR
-# if defined(_WIN32) || defined(_WIN64)
-    # if defined(_WIN64)
-        typedef __int64 LONG_PTR;
-    # else
-        typedef long LONG_PTR;
-    # endif
-    typedef LONG_PTR SSIZE_T;
-    typedef SSIZE_T ssize_t;
+// Handle missing ssize_t on Windows. 
+# if defined(_MSC_VER) 
+    typedef __int64 ssize_t;
 # endif
 
 // For py::array_t
