@@ -29,6 +29,10 @@ jobs:
             compiler: gcc
           - os: windows-latest
             python-version: '3.5'
+          - os: windows-2019
+            compiler: clang
+          - os: windows-2019
+            compiler: gcc
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
