@@ -26,7 +26,7 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 
 
 ## Installing
-You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10(x64)
+You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl and Python 3.6+ on Windows10(x64)
 
 ```
 pip install rii
@@ -36,7 +36,7 @@ pip install rii
 <details>
   <summary>For windows (maintained by @ashleyabraham)</summary>
 
-  ### Pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
+  ### Pre-compiled binary for Windows 10 
   ```
 #Python 3.8
 pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp38-cp38-win_amd64.whl
@@ -45,15 +45,17 @@ pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.
 #Python 3.7
 pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp37-cp37m-win_amd64.whl
    ```
+  ### Installing in Windows 10 via Pip install
+  Requires MS Visual Studio Build tools C++ 14.0 toolset or above to compile and install via pip install
 
-  ### OpenMP
+  #### OpenMP
 OpenMP requires libomp140_x86_64.dll to compile in windows, which is part of MS Visual Studio Build tools and it is not redistributable.
   
   In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
 
   `SET KMP_DUPLICATE_LIB_OK=TRUE`
 
-  ### SIMD
+  #### SIMD
   The /arch:AVX2 flag is used in MSVC to set appropriate SIMD preprocessors and compiler intrinsics
 
 </details>
