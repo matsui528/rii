@@ -102,7 +102,9 @@ class BuildExt(build_ext):
             if has_flag(self.compiler, '-fvisibility=hidden'):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
-            opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
+            opts.append('/std:c++17')
+            opts.append('/permissive-')
+            opts.append('/DVERSION_INFO="%s"' % self.distribution.get_version())
             opts.append('/openmp') 
             opts.append('/fp:fast') # -Ofast
 
@@ -116,10 +118,9 @@ class BuildExt(build_ext):
             opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
             opts.append('-Ofast')  # This makes the program faster
 
-
         for ext in self.extensions:
             ext.extra_compile_args = opts
-            if not sys.platform == 'darwin':
+            if sys.platform not in ['darwin', 'win32']:
                 ext.extra_link_args = ['-fopenmp']  # Because of PQk-means
 
         build_ext.build_extensions(self)
@@ -139,5 +140,6 @@ setup(
     setup_requires=['pybind11>=2.9'],
     ext_modules=ext_modules,
     cmdclass={'build_ext': BuildExt},
-    zip_safe=False
+    zip_safe=False,
+    python_requires=">=3.6",
 )

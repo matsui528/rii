@@ -26,7 +26,7 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 
 
 ## Installing
-You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 and Python 3.6+ on linux-latest/mac-latest/windows-latest
+You can install the package via pip. This library works with Python 3.6+ on linux/mac/wsl/Windows10
 
 ```
 pip install rii
@@ -36,17 +36,20 @@ pip install rii
 <details>
   <summary>For windows (maintained by @ashleyabraham)</summary>
 
-  ### Pre-compiled binary for Windows 10 
-  ```
-#Python 3.8
-pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp38-cp38-win_amd64.whl
-```
-```
-#Python 3.7
-pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp37-cp37m-win_amd64.whl
-   ```
-  ### Installing in Windows 10 via Pip install
+  ### Installing in Windows 10 via `pip install`
   Requires MS Visual Studio Build tools C++ 14.0 or 14.1 toolset or above to compile and install via pip install
+
+  ### Pre-compiled binary for Windows 10 
+  Pre-compiled binaries doesn't require MS Visual Studio Build tools
+
+  ```
+  #Python 3.8
+  pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp38-cp38-win_amd64.whl
+  ```
+  ```
+  #Python 3.7
+  pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp37-cp37m-win_amd64.whl
+```
 
   #### OpenMP
   OpenMP requires libomp140_x86_64.dll to compile in windows, which is part of MS Visual Studio Build tools and it is not redistributable.
