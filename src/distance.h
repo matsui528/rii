@@ -153,8 +153,8 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     }
 
     if (d > 0) {
-        __m128 mx = masked_read ((int)d, x);
-        __m128 my = masked_read ((int)d, y);
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
         // __m128 a_m_b1 = mx - my;
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
         // msum3 += a_m_b1 * a_m_b1;
@@ -200,8 +200,8 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
     }
 
     if (d > 0) {
-        __m128 mx = masked_read ((int)d, x);
-        __m128 my = masked_read ((int)d, y);
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
         // __m128 a_m_b1 = mx - my;
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
         // msum2 += a_m_b1 * a_m_b1;
@@ -235,8 +235,8 @@ float fvec_L2sqr (const float *x, const float *y, size_t d)
 
     if (d > 0) {
         // add the last 1, 2 or 3 values
-        __m128 mx = masked_read ((int)d, x);
-        __m128 my = masked_read ((int)d, y);
+        __m128 mx = masked_read (d, x);
+        __m128 my = masked_read (d, y);
         // __m128 a_m_b1 = mx - my;
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
         // msum1 += a_m_b1 * a_m_b1;
