@@ -208,7 +208,7 @@ std::pair<std::size_t, float> PQKMeans::FindNearetCenterLinear(const std::vector
     int min_i = -1;
     for (size_t i = 0, sz = codes.size(); i < sz; ++i) {
         if (dists[i] < min_dist) {
-            min_i = i;
+            min_i = static_cast<int>(i);
             min_dist = dists[i];
         }
     }

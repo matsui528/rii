@@ -2,6 +2,9 @@
 #include <pybind11/stl.h>  // To convert list of list <-> vec<vec<int>> for e.g. posting_lists
 #include "rii.h"
 
+#define STRINGIFY(x) #x
+#define MACRO_STRINGIFY(x) STRINGIFY(x)
+
 namespace py = pybind11;
 
 namespace rii {
@@ -51,7 +54,7 @@ PYBIND11_MODULE(main, m) {
         ));
 
 #ifdef VERSION_INFO
-    m.attr("__version__") = VERSION_INFO;
+    m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
 #else
     m.attr("__version__") = "dev";
 #endif

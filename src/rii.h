@@ -6,6 +6,11 @@
 #include "./pqkmeans.h"
 #include "./distance.h"
 
+// Handle missing ssize_t on Windows. 
+# if defined(_MSC_VER) 
+    typedef __int64 ssize_t;
+# endif
+
 // For py::array_t
 // See http://pybind11.readthedocs.io/en/master/advanced/pycpp/numpy.html#direct-access
 #include <pybind11/pybind11.h>
@@ -206,7 +211,8 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryLinear(const py
         size_t N = GetN();
         scores.resize(N);
 #pragma omp parallel for
-        for (size_t n = 0; n < N; ++n) {
+        for (long long n_tmp = 0LL; n_tmp < static_cast<long long>(N); ++n_tmp) {
+            size_t n = static_cast<size_t>(n_tmp);
             scores[n] = {n, ADist(dtable, flattened_codes_, n)};
         }
     } else {  // Target ids are specified
@@ -214,7 +220,8 @@ std::pair<std::vector<size_t>, std::vector<float> > RiiCpp::QueryLinear(const py
         assert(S <= GetN());
         scores.resize(S);
 #pragma omp parallel for
-        for (size_t s = 0; s < S; ++s) {
+        for (long long s_tmp = 0LL; s_tmp < static_cast<long long>(S); ++s_tmp) {
+            size_t s = static_cast<size_t>(s_tmp);
             size_t tid = static_cast<size_t>(tids(s));
             scores[s] = {tid, ADist(dtable, flattened_codes_, tid)};
         }
@@ -335,18 +342,19 @@ void RiiCpp::UpdatePostingLists(size_t start, size_t num)
 
 
     // ===== (1) Construct a dummy pqkmeans class for computing Symmetric Distance =====
-    pqkmeans::PQKMeans clustering_instance(codewords_, GetNumList(), 0, true);
+    pqkmeans::PQKMeans clustering_instance(codewords_, (int)GetNumList(), 0, true);
     clustering_instance.SetClusterCenters(coarse_centers_);
 
     // ===== (2) Update posting lists =====
     std::vector<size_t> assign(num);
 #pragma omp parallel for
-    for (size_t n = 0; n < num; ++n) {
+    for (long long n_tmp = 0LL; n_tmp < static_cast<long long>(num); ++n_tmp) {
+        size_t n = static_cast<size_t>(n_tmp);
         assign[n] = clustering_instance.predict_one(NthCode(flattened_codes_, start + n));
     }
 
     for (size_t n = 0; n < num; ++n) {
-        posting_lists_[assign[n]].push_back(start + n);
+        posting_lists_[assign[n]].push_back((int)(start + n));
     }
 }
 

@@ -26,7 +26,7 @@ The search can be operated for a subset of a database. | Rii remains fast even a
 
 
 ## Installing
-You can install the package via pip. This library works with Python 3.5+ on linux/mac/wsl/Windows10 (x64, using MSVC:flags - /arch:AVX2, /openmp:llvm, /fp:fast').
+You can install the package via pip. This library works with Python 3.6+ on linux/mac/wsl/Windows10
 
 ```
 pip install rii
@@ -36,17 +36,29 @@ pip install rii
 <details>
   <summary>For windows (maintained by @ashleyabraham)</summary>
 
-  ### Pre-compiled binary for Windows 10 (, may need MS Visual Studio Build tools)
-  ```
-  pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.7/rii-0.2.7-cp38-cp38-win_amd64.whl
-  ```
+  ### Installing in Windows 10 via `pip install`
+  Requires MS Visual Studio Build tools C++ 14.0 or 14.1 toolset or above to compile and install via pip install
 
-  ### OpenMP
+  ### Pre-compiled binary for Windows 10 
+  Pre-compiled binaries doesn't require MS Visual Studio Build tools
+
+  ```
+  #Python 3.8
+  pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp38-cp38-win_amd64.whl
+  ```
+  ```
+  #Python 3.7
+  pip install https://github.com/ashleyabraham/rii/releases/download/v0.2.8/rii-0.2.8-cp37-cp37m-win_amd64.whl
+```
+
+  #### OpenMP
+  OpenMP requires libomp140_x86_64.dll to compile in windows, which is part of MS Visual Studio Build tools and it is not redistributable.
+  
   In order to use OpenMP 3.0 /openmp:llvm flag is used which causes warnings of multiple libs loading, use at your descretion when used with other parallel processing library loadings. To supress use
 
   `SET KMP_DUPLICATE_LIB_OK=TRUE`
 
-  ### SIMD
+  #### SIMD
   The /arch:AVX2 flag is used in MSVC to set appropriate SIMD preprocessors and compiler intrinsics
 
 </details>
@@ -101,7 +113,7 @@ e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 
 ```python
 # The search can be conducted over a subset of the database
-target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234])  # Specified by IDs
+target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234], dtype=np.int64)  # Specified by IDs
 ids, dists = e.query(q=q, topk=3, target_ids=target_ids)
 print(ids, dists)  # e.g., [728  85 132] [14.80522156 15.92787838 16.28690338]
 ```
@@ -148,8 +160,8 @@ e.verbose = False
 # You can merge two Rii instances if they have the same fine_quantizer
 e1 = rii.Rii(fine_quantizer=codec)
 e2 = rii.Rii(fine_quantizer=codec)
-e1.add_reconfigure(vecs=X1)
-e2.add_reconfigure(vecs=X2)
+e1.add_configure(vecs=X1)
+e2.add_configure(vecs=X2)
 e1.merge(e2)  # Now e1 contains both X1 and X2
 
 ```
