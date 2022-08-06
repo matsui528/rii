@@ -113,7 +113,10 @@ e = rii.Rii(fine_quantizer=nanopq.PQ(M=32).fit(vecs=Xt)).add_configure(vecs=X)
 
 ```python
 # The search can be conducted over a subset of the database
-target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234], dtype=np.int64)  # Specified by IDs
+target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234]) # Specified by IDs
+# For windows, you must specify dtype=np.int64 as follows.
+# target_ids = np.array([85, 132, 236, 551, 694, 728, 992, 1234], dtype=np.int64)  
+
 ids, dists = e.query(q=q, topk=3, target_ids=target_ids)
 print(ids, dists)  # e.g., [728  85 132] [14.80522156 15.92787838 16.28690338]
 ```

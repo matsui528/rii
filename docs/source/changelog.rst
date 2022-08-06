@@ -1,6 +1,11 @@
 Changelog
 =============
 
+v0.2.9 (August 06, 2022)
+----------------------------
+- `#45 <https://github.com/matsui528/rii/pull/45>`_ Support for modern Windows CI (windows-2022). Support Python 3.9 and 3.10. Drop the support for Python 3.5.
+
+
 v0.2.8 (September 12, 2021)
 ----------------------------
 - `#42 <https://github.com/matsui528/rii/pull/42>`_, `#43 <https://github.com/matsui528/rii/pull/43>`_ Support Windows
