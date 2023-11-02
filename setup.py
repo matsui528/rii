@@ -1,5 +1,5 @@
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import setup, Extension, find_packages
-from setuptools.command.build_ext import build_ext
 import sys
 import setuptools
 import re
@@ -19,7 +19,7 @@ with open('rii/__init__.py') as f:
 
 
 ext_modules = [
-    Extension(
+    Pybind11Extension(
         'main',
         ['src/main.cpp',
          'src/pqkmeans.cpp'],  # For c++ pqkmeans
@@ -115,7 +115,7 @@ setup(
     install_requires=requirements,
     setup_requires=['pybind11>=2.9'],
     ext_modules=ext_modules,
-    cmdclass={'build_ext': BuildExt},
+    cmdclass={'build_ext': build_ext},
     zip_safe=False,
     python_requires=">=3.6",
 )
