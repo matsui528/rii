@@ -8,7 +8,7 @@
 #ifdef _MSC_VER
 #  include <immintrin.h> 
 #elif defined(__aarch64__)
-#  include "sse2neon.h"
+#  include "./extern/sse2neon.h"
 #else
 #  include <x86intrin.h>
 #endif
