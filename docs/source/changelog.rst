@@ -9,8 +9,6 @@ v0.2.11 (November 13, 2023)
 - Further clean up the build system.
 - `See here for a list of PRs <https://github.com/matsui528/rii/releases/tag/v0.2.11>`_
 
-
-
 v0.2.10 (October 27, 2023)
 ----------------------------
 - Update the build system to support handling the latest pip.
