@@ -3,6 +3,18 @@ Changelog
 
 See `releases <https://github.com/matsui528/rii/releases>`_ for the latest changes.
 
+v0.2.11 (November 13, 2023)
+----------------------------
+- Support ARM CPUs.
+- Further clean up the build system.
+- `See here for a list of PRs <https://github.com/matsui528/rii/releases/tag/v0.2.11>`_
+
+v0.2.10 (October 27, 2023)
+----------------------------
+- Update the build system to support handling the latest pip.
+- `See here for a list of PRs <https://github.com/matsui528/rii/releases/tag/v0.2.10>`_
+
+
 v0.2.9 (August 06, 2022)
 ----------------------------
 - `#45 <https://github.com/matsui528/rii/pull/45>`_ Support for modern Windows CI (windows-2022). Support Python 3.9 and 3.10. Drop the support for Python 3.5.
