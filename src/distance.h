@@ -4,8 +4,11 @@
 // http://koturn.hatenablog.com/entry/2016/07/18/090000
 // windows is not supported, but just in case (later someone might implement)
 // https://software.intel.com/sites/landingpage/IntrinsicsGuide/#expand=590,27,2
+// ARM64 support from sse2neon: https://github.com/DLTcollab/sse2neon
 #ifdef _MSC_VER
 #  include <immintrin.h> 
+#elif defined(__aarch64__)
+#  include "./extern/sse2neon.h"
 #else
 #  include <x86intrin.h>
 #endif
