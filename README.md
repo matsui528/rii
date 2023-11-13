@@ -179,4 +179,4 @@ e1.merge(e2)  # Now e1 contains both X1 and X2
 ## Credits
 - The logo is designed by [@richardbmx](https://github.com/richardbmx) ([#4](https://github.com/matsui528/rii/issues/4))
 - The windows implementation is by [@ashleyabraham](https://github.com/ashleyabraham) ([#42](https://github.com/matsui528/rii/pull/42))
-- Fix the build by [@timzag](https://github.com/timzag) ([#50](https://github.com/matsui528/rii/pull/50))
+- Fixing the build ([#50](https://github.com/matsui528/rii/pull/50)) and supporting for ARM CPUs ([#58](https://github.com/matsui528/rii/pull/58)) by [@timzag](https://github.com/timzag)
