@@ -32,7 +32,7 @@ jobs:
 
     - name: Build package
       run: |
-        python -m build
+        python -m build --sdist
 
     - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
