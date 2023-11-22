@@ -3,7 +3,7 @@ Changelog
 
 See `releases <https://github.com/matsui528/rii/releases>`_ for the latest changes.
 
-v0.2.11 (November 13, 2023)
+v0.2.11 (November 22, 2023)
 ----------------------------
 - Support ARM CPUs.
 - Further clean up the build system.
