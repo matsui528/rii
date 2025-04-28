@@ -2,20 +2,20 @@
 requires = ["setuptools>=64", "pybind11>=2.9", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[project]
-name = "rii"
-dynamic = ["version"]
-requires-python = ">=3.8"
-description = "Fast and memory-efficient ANN with a subset-search functionality"
-readme = "README.md"
-authors = [
-  {name = "Yusuke Matsui", email = "matsui528@gmail.com"}
-]
-maintainers = [
- {name = "Yusuke Matsui", email = "matsui528@gmail.com"}
-]
-license="MIT"
+# [project]
+# name = "rii"
+# dynamic = ["version"]
+# requires-python = ">=3.8"
+# description = "Fast and memory-efficient ANN with a subset-search functionality"
+# readme = "README.md"
+# authors = [
+#   {name = "Yusuke Matsui", email = "matsui528@gmail.com"}
+# ]
+# maintainers = [
+#  {name = "Yusuke Matsui", email = "matsui528@gmail.com"}
+# ]
+# license="MIT"
 
-[project.urls]
-Homepage="https://github.com/matsui528/rii"
-Repository= "https://github.com/matsui528/rii"
+# [project.urls]
+# Homepage="https://github.com/matsui528/rii"
+# Repository= "https://github.com/matsui528/rii"
