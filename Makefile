@@ -1,7 +1,7 @@
 .PHONY: test clean build
 
 test:
-	python setup.py test
+	python -m unittest
 
 clean:
 	rm -rf build tmp dist *.egg-info *.so .eggs
