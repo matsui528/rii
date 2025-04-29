@@ -88,7 +88,7 @@ class BuildExt(build_ext):
             # For linux
             opts.append('-fopenmp')  # For pqk-means.
 
-        if sys.platform not in ['win32']:
+        if sys.platform not in ['darwin', 'win32']:
             # For linux and mac
             opts.append('-march=native')  # For fast SIMD computation of L2 distance
             opts.append('-mtune=native')  # Do optimization (It seems this doesn't boost, but just in case)
