@@ -3,6 +3,11 @@ Changelog
 
 See `releases <https://github.com/matsui528/rii/releases>`_ for the latest changes.
 
+v0.2.12 (May 8, 2025)
+----------------------------
+- `#67 <https://github.com/matsui528/rii/pull/67>`_ Support Python 3.12.
+
+
 v0.2.11 (November 22, 2023)
 ----------------------------
 - Support ARM CPUs.
