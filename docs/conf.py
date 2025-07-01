@@ -168,5 +168,6 @@ texinfo_documents = [
 
 # autodoc
 autodoc_member_order = 'bysource'
+autodoc_mock_imports = ['main']
 
 
